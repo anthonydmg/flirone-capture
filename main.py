@@ -141,7 +141,7 @@ while True:
 
         if alert_prob > 0.2:
             now = datetime.now() # current date and time
-            date_time = now.strftime("%m/%d/%Y, %H:%M:%S")q
+            date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
 
             data = {
                 "maxTemperature": str(max_temperature),
