@@ -1,0 +1,26 @@
+## usar libtiff para guardar igual que opencv
+
+## https://indico.ictp.it/event/7657/session/4/contribution/19/material/1/0.pdf
+https://github.com/MLAlex1/DecisionTree_C_plus_plus_Python
+### Asi se exporta interfazes de clases
+https://towardsdatascience.com/calling-c-code-from-python-with-ctypes-module-58404b9b3929
+
+g++ -fPIC -shared -o cpplibrary.so cpplibrary.cpp
+
+g++ -fPIC -shared -I/usr/include/libusb-1.0 -o flironecapture.so flironecapture.cpp  -lusb-1.0 -lm
+
+g++ -I/usr/include/libusb-1.0  -Wall -g -fPIC -shared -o flironecapture.so flironecapture.cpp flironedriver.o lusb-1.0 -lm
+
+g++ -fPIC -shared -o flironecapture.so flironecapture.o flironedriver.o -L/usr/local/lib -lusb-1.0 -ljpeg -ltiff
+
+
+SUBSYSTEM=="usb", ATTRS{idVendor}=="09cb", ATTRS{idProduct}=="1996", MODE="0666", GROUP="plugdev"
+
+https://leimao.github.io/blog/Python-C-Library-Function-Binding-Using-ctypes/#References
+
+https://www.matecdev.com/posts/cpp-call-from-python.html#:~:text=PyBind11%20vs%20ctypes,-There%20are%20basically&text=Using%20PyBind11%20we%20can%20more,for%20quick%20exploration%20and%20debugging.
+
+
+https://research.cs.wisc.edu/graphics/Courses/638-f1999/libtiff_tutorial.htm
+
+libjpeg-dev
