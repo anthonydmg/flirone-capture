@@ -7,11 +7,11 @@ import socketio
 from datetime import datetime
 import time
 
-sio = socketio.Client()
-sio.connect('http://localhost:5055')
+#sio = socketio.Client()
+#sio.connect('http://localhost:5055')
 
 
-sio.emit("startFireDetection", "Comienzar Detecction");
+#sio.emit("startFireDetection", "Comienzar Detecction");
 frameRate = 2
 SH = 0.6136
 SW = 0.620
@@ -152,7 +152,7 @@ while True:
                 "time": date_time
             }
 
-            sio.emit("fireDetected", data)
+            #sio.emit("fireDetected", data)
         
     cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
     cv2.resizeWindow("Thermal Image", 640, 480)
@@ -163,4 +163,4 @@ while True:
     
 cv2.destroyAllWindows()
 
-sio.emit("stopFireDetection", "Detener Detecction")
+#sio.emit("stopFireDetection", "Detener Detecction")

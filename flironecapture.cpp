@@ -663,15 +663,28 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
     int width, height, pixel_size, row_stride;
     
     info.err= jpeg_std_error(&jerr);
-    
     jpeg_create_decompress(&info);
+    printf("Creando decompress\n");
     jpeg_mem_src(&info, jpg_buffer, size);
-    int rc=jpeg_read_header(&info,TRUE);
-    if (rc != 1){
-        printf("Hubo un error al descomprimir imagen\n");
+    printf("Estableciendo fuente\n");
+    try
+    {
+        int rc= jpeg_read_header(&info,TRUE);
+         
+        if (rc != 1){
+            printf("Hubo un error al descomprimir imagen\n");
+            return NULL;
+        }
+    }
+    catch(const std::exception& e)
+    {
         return NULL;
     }
+    
+   
 
+    printf("Comenzando decompresion\n");
+    
     jpeg_start_decompress(&info);
 
     width =info.output_width;
@@ -690,7 +703,7 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
         //printf("buffer_array = %d", buffer_array);
         jpeg_read_scanlines(&info,buffer_array,1);
     }
-
+     printf("Finalizando decompresion\n");
     jpeg_finish_decompress(&info);
     jpeg_destroy_decompress(&info);
     
