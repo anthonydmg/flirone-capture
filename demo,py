@@ -1,0 +1,13 @@
+fligth_height = 10
+
+class FireDetecionData:
+    def __init__(self, max_temperature, max_areaM2, latitud = "", longitud =  "", distance =  fligth_height):
+        self.max_areaM2 = max_areaM2
+        self.max_temperature = max_temperature
+        self.latitud = "",
+        self.longitud = ""
+        self.distance = distance
+
+
+data = FireDetecionData(50.0, 2.0)
+print(data.__dict__)

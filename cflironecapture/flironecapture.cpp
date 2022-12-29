@@ -27,6 +27,16 @@ bool startWithMagicByte(uint8_t * buffer){
     return true;
 }
 
+bool startWithMagicByteJpg(uint8_t * buffer){
+    uint8_t magic_byte[] = {0xFF, 0xD8, 0xFF};
+    for (int i = 0; i<3; i++){
+        if (buffer[i] != magic_byte[i]){
+        return false;
+        }
+    }
+    return true;
+}
+
 int findMagicBytes(uint8_t * buffer, int length){
     for(int i =0; i< length - 4; i ++){
         if(startWithMagicByte(buffer + i)){
@@ -507,7 +517,7 @@ bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_da
             if(found_header){
                 pointer = pointer + length_stream;
                 if(thermal_size == 0 && pointer >= 28 ){
-                    read_header(tframe_data, jpg_size, thermal_size, pyload_size);
+                    read_header(tframe_data, pyload_size, thermal_size, jpg_size);
                 }
     
                 if(t_frame_iscomplete(pyload_size, pointer)){
@@ -618,6 +628,49 @@ double save_image_16bits_tiff(uint16_t * imageGray16, char * name , uint32_t wei
     TIFFClose(out);
 }
 
+/* void load_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){
+
+    TIFF *out = TIFFOpen(pathname, "r");
+    if(out == NULL){
+        printf("No se puedo realizar el guardado\n");
+        return ;
+    }
+
+    tstrip_t strip;
+    printf("(tsize_t) -1) = %d \n", (tsize_t) -1);
+    for (strip = 0; strip < 2; strip++){
+		printf("TIFFNumberOfStrips: %d\n", TIFFNumberOfStrips(out));
+        TIFFReadEncodedStrip(out, strip, image_gray16, -1);
+    }
+    //_TIFFfree(buf);
+    TIFFClose(out);
+    printf("Lectura exitosa\n");
+}
+ */
+
+void load_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){
+
+    TIFF *tif = TIFFOpen(pathname, "r");
+    if(tif == NULL){
+        printf("No se puedo realizar el guardado\n");
+        return ;
+    }
+
+    tstrip_t strip;
+    uint32_t* bc;
+	uint32_t stripsize;
+    
+    TIFFGetField(tif, TIFFTAG_STRIPBYTECOUNTS, &bc);
+    printf("TIFFNumberOfStrips: %d\n", TIFFNumberOfStrips(tif));
+    printf("StripSize = %d\n",bc[0]);
+    printf("StripSize = %d\n",bc[1]);
+    printf("StripSize = %d\n",bc[2]);
+    stripsize = 0;
+    for (strip = 0; strip < TIFFNumberOfStrips(tif); strip++) {
+		TIFFReadRawStrip(tif, strip, image_gray16 + stripsize / 2, -1);
+        stripsize = bc[strip];
+	}
+}
 
 bool save_jpg_image_from_buffer(uint8_t * bmp_buffer, char * name, uint32 width, uint32  height){
     FILE* fHandle;
@@ -727,6 +780,11 @@ bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[
     uint8 *  bmp_buffer ;
     printf("Comenzando la descompresion\n");
     printf("thermal_size = %d, jpg_size = %d\n", thermal_size, jpg_size);
+    
+    if(!startWithMagicByteJpg(tframe_data + 28 + thermal_size)){
+        return false;
+    }
+
     bmp_buffer = decompress_jpg_image(tframe_data + 28 + thermal_size, jpg_size);
     
     if (bmp_buffer == NULL)
@@ -745,6 +803,14 @@ bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[
         }
     return true;
 }
+
+void read_thermal_frame_temperatures(uint16_t gray16frame [4800], double Temperatures[80 * 60]){
+        for(int y = 0; y < THERMAL_IMAGE_HEIGHT; y++){
+            for(int x = 0; x< THERMAL_IMAGE_WIDTH; x++){   
+                    Temperatures[y + x * THERMAL_IMAGE_HEIGHT] = raw2temperature(gray16frame[x + y * THERMAL_IMAGE_WIDTH]);
+            }
+        }
+}  
 
 extern "C" {
     FlirOneCapture * new_flironecapture(){
@@ -784,5 +850,9 @@ extern "C" {
     
     bool save_flirone_images(char * path, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
         return save_flir_images(path, imageGray16, thermal_weight, thermal_heigth, frame_color,frame_weight,frame_heigth );
+    }
+    
+    void load_thermal_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){
+        return load_image_16bits_tiff(pathname, image_gray16);
     }
 }

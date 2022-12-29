@@ -24,3 +24,6 @@ https://www.matecdev.com/posts/cpp-call-from-python.html#:~:text=PyBind11%20vs%2
 https://research.cs.wisc.edu/graphics/Courses/638-f1999/libtiff_tutorial.htm
 
 libjpeg-dev
+
+error a resolver
+Unable to allocate 4.45 MiB for an array with shape (4665600,) and data type uint8

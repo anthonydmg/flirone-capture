@@ -7,22 +7,16 @@ SW = 0.620
 hfov = 38
 vfov = 50
 
-class FireForestFuzzyDetector:
+class FuzzyOutput:
+    def __init__(self, alert_prob, membership_alert_green, membership_alert_orange,  membership_alert_red):
+        self.alert_prob = alert_prob
+        self.membership_alert_green = membership_alert_green
+        self.membership_alert_orange = membership_alert_orange
+        self.membership_alert_red = membership_alert_red
+
+class FuzzySystem:
     def __init__(self) -> None:
         self.init_fuzzy_system()
-
-    def convertAreaMeters(self, areaPixels,  altura,  heigth,  width):
-        # RGB images distances
-        print("areaPixels:", areaPixels)
-        Vdh = 2 * altura * np.tan(0.5 * hfov * (np.pi/ 180.0))
-        Vdv = 2 * altura * np.tan(0.5 * vfov * (np.pi/ 180.0))
-        # Scale to thermal distances
-        Tdh = Vdh * SH
-        Tdv = Vdv * SW
-        print("area Image:", Tdv * Tdh)
-        pixelSize = (Tdv * Tdh) / (heigth * width)
-        areaMeters = areaPixels * pixelSize
-        return areaMeters
 
     def detectFire(self, M_Temperatures, fligth_height, height, width, threshold_temperature = 100):
         max_temperature = M_Temperatures.max()
@@ -49,14 +43,14 @@ class FireForestFuzzyDetector:
          
     def init_fuzzy_system(self):
         ## Generando las variables
-        self.x_temperature = np.arange(0,200,1)
+        self.x_temperature = np.arange(0,300,1)
         self.x_areaFire = np.arange(0,20,0.5)
         self.x_alert = np.arange(0,1,0.1)
 
         ## Fuzzy member ship
-        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0,40, 80])
-        self.temp_medium = fuzz.trimf(self.x_temperature, [40, 80, 120])
-        self.temp_high = fuzz.trapmf(self.x_temperature,[80,120,200,200])
+        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0,50, 100])
+        self.temp_medium = fuzz.trimf(self.x_temperature, [50, 100, 140])
+        self.temp_high = fuzz.trapmf(self.x_temperature,[80,140,300,300])
 
         self.areaF_low = fuzz.trapmf(self.x_areaFire, [0, 0, 0.5, 1])
         self.areaF_medium = fuzz.trimf(self.x_areaFire, [0.5, 1, 2])
@@ -104,19 +98,18 @@ class FireForestFuzzyDetector:
     
     def defuzzification(self, rule_verde, rule_naranja , rule_rojo):
         ## Desfuzificacion
-        verde = np.fmin(rule_verde, self.alert_low)
-        naranja = np.fmin(rule_naranja, self.alert_medium)
-        rojo = np.fmin(rule_rojo, self.alert_high)
-        aggregated = np.fmax(verde, np.fmax(naranja, rojo))
-
+            #verde = np.fmin(rule_verde, self.alert_low)
+            #naranja = np.fmin(rule_naranja, self.alert_medium)
+            #rojo = np.fmin(rule_rojo, self.alert_high) 
+            #aggregated = np.fmax(verde, np.fmax(naranja, rojo))
+        
+        x_values = [0.2, 0.5, 1.0]
+        #prob_alert = fuzz.defuzz(self.x_alert, aggregated, 'centroid')
         # Calculate defuzzified result
-        prob_alert = fuzz.defuzz(self.x_alert, aggregated, 'centroid')
-        return prob_alert
-    
+        prob_alert = (rule_verde * x_values[0] + rule_naranja * x_values[1] + rule_rojo * x_values[2]) / (rule_verde + rule_naranja + rule_rojo)
 
+        return FuzzyOutput(prob_alert, rule_verde, rule_naranja, rule_rojo)
+    
     def fuzzy_system_inference(self, maxTemperature, areaFire):
         rule_verde, rule_naranja , rule_rojo = self.fuzzy_inference(maxTemperature, areaFire)
-        print("rule_verde", rule_verde)
-        print("rule_naranja", rule_naranja)
-        print("rule_rojo", rule_rojo)
         return self.defuzzification(rule_verde, rule_naranja , rule_rojo)

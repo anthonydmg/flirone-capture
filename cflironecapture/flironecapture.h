@@ -89,3 +89,5 @@ void read_thermal_frame_color(uint16_t gray16frame [4800], uint8_t  tframe_color
 double save_image_16bits_tiff(uint16_t * imageGray16, uint32_t weight, uint32_t heigth, uint32_t channels );
 bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t * frame_color , uint32_t  &thermal_size , uint32_t  &jpg_size , uint32_t width, uint32_t heigth);
 bool save_flir_images(char * path, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth );
+void load_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]);
+void read_thermal_frame_temperatures(uint16_t gray16frame [4800], double Temperatures[80 * 60]);
