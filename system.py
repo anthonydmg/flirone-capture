@@ -9,9 +9,10 @@ import time
 from flirone_capture import FlirOneCapture
 
 from module_radar import ModuleDistanceDetector
+from gps_reciver import GPS_RECEIVER
 import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
-sio = socketio.Client()
+#sio = socketio.Client()
 
 FRAME_RATE = 2
 
@@ -49,6 +50,7 @@ class System:
         self.fligh_speed = fligh_speed
         self.show_frames = show_frames
         self.overlap = overlap
+        self.gps_reciever = GPS_RECEIVER()
 
     def run(self):
         opened = self.flirone_capture.open_device()
@@ -59,8 +61,8 @@ class System:
             print("Ocurrio un error al memento de abrir dispositivo")
             exit(0)
 
-        #self.sio.connect('http://localhost:5055')
-        #self.sio.emit("startFireDetection", "Comienzar Detecction")
+        self.sio.connect('http://localhost:5055', wait_timeout = 10)
+        self.sio.emit("startFireDetection", "Comienzar Detecction")
 
         success = self.distanceDetector.connect()
 
@@ -83,17 +85,25 @@ class System:
             if (time_elapsed > (1 / frame_rate)):
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 
-                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures, self.fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH)
-                
-                if fireDetectionOuput.fire_prob > 0.5:
+                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures, self.fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
+                fire_prob = fireDetectionOuput.fire_prob
+
+                print("Fire Prob:",fire_prob)
+                if fire_prob > 0.2:
+
                     fireDetectionData = fireDetectionOuput.fireDetectionData
+                    ## GET GPS LOCATION
                     
-                    notify_alert(fireDetectionData)
+                    location = self.gps_reciever.get_current_location()
+
+                    fireDetectionData.set_latitud(location["latitude"])
+                    fireDetectionData.set_longitud(location["longitude"])
+
+                    self.notify_alert(fire_prob, fireDetectionData)
 
                     thermal_frame.save_images()
-                    stop_read_radar = True
-                    break
-                #sio.emit("fireDetected", data)
+                    #stop_read_radar = True
+                    #break
             
             if self.show_frames:
                 tframe_image = thermal_frame.getThermalFrameRGB()
@@ -119,22 +129,23 @@ class System:
         t1 = threading.Thread(target = read_distance, args = (lambda : stop_read_radar,))
         t1.start()
        
-    def notify_alert(self, fireDetectionOuput):
+    def notify_alert(self, alert_prob, fireDetectionOuput):
         now = datetime.now() # current date and time
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
 
         data = {
+            "prob": str(alert_prob),
             "maxTemperature": str(fireDetectionOuput.max_temperature),
             "areaFire": str(fireDetectionOuput.max_areaM2),
-            "latitud": "0",
-            "longitud": "0",
+            "latitud": str(fireDetectionOuput.latitud),
+            "longitud": str(fireDetectionOuput.longitud),
             "distance": str(fireDetectionOuput.fligth_height),
             "time": date_time
         }
 
         print("Fuego encontrado!!:", data) 
         
-        #self.sio.emit("fireDetected", data)
+        self.sio.emit("fireDetected", data)
 
     def calculateLongitudeVFov(self, altura):
         Vdv = 2 * altura * np.tan(0.5 * vfov * (np.pi / 180.0))

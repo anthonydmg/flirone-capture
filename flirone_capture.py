@@ -1,6 +1,7 @@
 import ctypes
 from ctypes import *
 import numpy as np
+import os
 
 BUFFER_SIZE = 350000
 THERMAL_IMAGE_HEIGTH = 80
@@ -94,6 +95,8 @@ class ThermalFrame:
         return Vframe_image
 
     def save_images(self, path_file = "./images"):
+        os.makedirs(path_file, exist_ok = True)
+        
         path_file = path_file.encode("utf-8")
         path_char = (ctypes.c_char * 100)(*path_file)
 
