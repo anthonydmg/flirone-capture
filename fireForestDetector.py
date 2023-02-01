@@ -54,24 +54,27 @@ class FireForestDetector:
         max_areaM2 = 0
         for cnt in hot_regions_contours:
             areaPixels = cv2.contourArea(cnt)
-            print("AreaPixeles:", areaPixels)
+            #print("AreaPixeles:", areaPixels)
             areaM2 = self.convertAreaMeters(areaPixels, fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH)
             if areaM2 > max_areaM2:
                 max_areaM2 = areaM2
-            print("areaM2:", areaM2)
+            #print("areaM2:", areaM2)
         return max_areaM2
     
     def calcule_max_temperature(self, Matrix_Temperatures):
-        max_temperature = Matrix_Temperatures.max()
+        return Matrix_Temperatures.max()
 
     def detectFire(self, Matrix_Temperatures, fligth_height, height, width, threshold_temperature = 100):
         hot_regions_contours = self.find_hot_regions(Matrix_Temperatures, threshold_temperature)
         max_areaM2 = self.calculate_largest_area(hot_regions_contours, fligth_height)
         max_temperature = self.calcule_max_temperature(Matrix_Temperatures)
+        print("Max area:", max_areaM2)
+        print("max temperature:", max_temperature)
         fuzzyOutput = self.fuzzy_system.fuzzy_system_inference(max_temperature, max_areaM2)
         
         fire_prob = fuzzyOutput.alert_prob
-        
+        print("Fire Prob:", fire_prob)
+
         if fuzzyOutput.membership_alert_orange > 0.5:
             alert_level = "orange"
         else:
@@ -89,7 +92,7 @@ class FireForestDetector:
         # Scale to thermal distances
         Tdh = Vdh * SH
         Tdv = Vdv * SW
-        print("area Image:", Tdv * Tdh)
+        #print("area Image:", Tdv * Tdh)
         pixelSize = (Tdv * Tdh) / (heigth * width)
         areaMeters = areaPixels * pixelSize
         return areaMeters
