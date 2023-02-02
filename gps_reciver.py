@@ -10,27 +10,27 @@ class GPS_RECEIVER:
         #self.get_current_location()
 
     def get_current_location(self):
-        #try:
-        if self.connected == True:
-            nx = self.gpds.next()
-            print(nx)
-            if nx['class'] == 'TPV':
-                latitude = getattr(nx,'lat', "Unknown")
-                longitude = getattr(nx,'lon', "Unknown")
-                print ("Your position: lon = " + str(longitude) + ", lat = " + str(latitude))
-                location = { 
-                    "latitude" : latitude,
-                    "longitude": longitude}
-                
-                return location
+        try:
+            if self.connected == True:
+                nx = self.gpds.next()
+                print(nx)
+                if nx['class'] == 'TPV':
+                    latitude = getattr(nx,'lat', "Unknown")
+                    longitude = getattr(nx,'lon', "Unknown")
+                    print ("Your position: lon = " + str(longitude) + ", lat = " + str(latitude))
+                    location = { 
+                        "latitude" : latitude,
+                        "longitude": longitude}
+                    
+                    return location
+                return {"latitude": "", "longitude": ""}
+            else: 
+                return {"latitude": "", "longitude": ""}
+        except Exception as error:
+            print("GPS no conectado..")
+            print(error)
+            self.connected = False
             return {"latitude": "", "longitude": ""}
-        else: 
-            return {"latitude": "", "longitude": ""}
-        #except Exception as error:
-        #    print("GPS no conectado..")
-        #    print(error)
-        #    self.connected = False
-        #    return {"latitude": "", "longitude": ""}
 
 
 if __name__ == "__main__":
