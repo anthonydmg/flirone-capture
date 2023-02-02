@@ -1,5 +1,6 @@
 # Prerequisites
 *.d
+#*.so
 
 # Compiled Object files
 *.slo
@@ -12,7 +13,7 @@
 *.pch
 
 # Compiled Dynamic libraries
-#*.so
+*.so
 *.dylib
 *.dll
 

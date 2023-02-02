@@ -22,7 +22,7 @@ class FuzzySystem:
         max_temperature = M_Temperatures.max()
         mask_array = M_Temperatures > threshold_temperature
 
-        print("max_temperature:", max_temperature)
+        #print("max_temperature:", max_temperature)
         mask_array = mask_array * 255.0
         mask_array = mask_array.astype(np.uint8)
         
@@ -31,13 +31,13 @@ class FuzzySystem:
         max_areaM2 = 0
         for cnt in contours:
             areaPixels = cv2.contourArea(cnt)
-            print("AreaPixeles:", areaPixels)
+            #print("AreaPixeles:", areaPixels)
             areaM2 = self.convertAreaMeters(areaPixels, fligth_height, height, width)
             if areaM2 > max_areaM2:
                 max_areaM2 = areaM2
-            print("areaM2:", areaM2)
+            #print("areaM2:", areaM2)
 
-        print("max_areaM2:", max_areaM2)
+        #print("max_areaM2:", max_areaM2)
         alert_prob = self.fuzzy_system_inference(max_temperature,max_areaM2)
         return alert_prob, max_areaM2, max_temperature
          
@@ -61,24 +61,24 @@ class FuzzySystem:
         self.alert_high = fuzz.trapmf(self.x_alert, [0.5,0.7, 1.0,1.0])
 
     def fuzzy_inference(self, temperature, areaFire):
-        print("Temperature:", temperature)
-        print("Area Fire:", areaFire)
+        #print("Temperature:", temperature)
+        #print("Area Fire:", areaFire)
 
         temp_level_low = fuzz.interp_membership(self.x_temperature, self.temp_low, temperature) 
         temp_level_medium = fuzz.interp_membership(self.x_temperature, self.temp_medium, temperature) 
         temp_level_high = fuzz.interp_membership(self.x_temperature, self.temp_high, temperature) 
 
-        print("temp_level_low: ", temp_level_low)
-        print("temp_level_medium:", temp_level_medium)
-        print("temp_level_high:", temp_level_high)
+        #print("temp_level_low: ", temp_level_low)
+        #print("temp_level_medium:", temp_level_medium)
+        #print("temp_level_high:", temp_level_high)
 
         areaF_level_low = fuzz.interp_membership(self.x_areaFire, self.areaF_low, areaFire) 
         areaF_level_medium = fuzz.interp_membership(self.x_areaFire, self.areaF_medium, areaFire) 
         areaF_level_high = fuzz.interp_membership(self.x_areaFire, self.areaF_high, areaFire) 
 
-        print("areaF_level_low:", areaF_level_low)
-        print("areaF_level_medium:", areaF_level_medium )
-        print("areaF_level_high", areaF_level_high)
+        #print("areaF_level_low:", areaF_level_low)
+        #print("areaF_level_medium:", areaF_level_medium )
+        #print("areaF_level_high", areaF_level_high)
         ## Primera regla
         ## Rule Verde
         rule1_1 = np.fmin(temp_level_low, areaF_level_low)
@@ -104,9 +104,9 @@ class FuzzySystem:
         rule3_2 = np.fmin(temp_level_high, areaF_level_high)
         rule_rojo = np.fmax(rule3_1,rule3_2)
 
-        print("verde:", rule_verde)
-        print("naranja:", rule_naranja)
-        print("rojo:", rule_rojo)
+        #print("verde:", rule_verde)
+        #print("naranja:", rule_naranja)
+        #print("rojo:", rule_rojo)
         return rule_verde, rule_naranja , rule_rojo
     
     def defuzzification(self, rule_verde, rule_naranja , rule_rojo):
@@ -121,7 +121,7 @@ class FuzzySystem:
         # Calculate defuzzified result
         prob_alert = (rule_verde * x_values[0] + rule_naranja * x_values[1] + rule_rojo * x_values[2]) / (rule_verde + rule_naranja + rule_rojo)
         
-        print("Prob Alert:", prob_alert)
+        #print("Prob Alert:", prob_alert)
 
         return FuzzyOutput(prob_alert, rule_verde, rule_naranja, rule_rojo)
     

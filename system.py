@@ -88,7 +88,6 @@ class System:
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures, self.fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
 
-                print("Fire Prob:",fire_prob)
                 if fire_prob > 0.2:
 
                     fireDetectionData = fireDetectionOuput.fireDetectionData
@@ -143,7 +142,7 @@ class System:
             "time": date_time
         }
 
-        print("Fuego encontrado!!:", data) 
+        #print("Fuego encontrado!!:", data) 
         
         self.sio.emit("fireDetected", data)
 

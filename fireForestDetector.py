@@ -68,12 +68,12 @@ class FireForestDetector:
         hot_regions_contours = self.find_hot_regions(Matrix_Temperatures, threshold_temperature)
         max_areaM2 = self.calculate_largest_area(hot_regions_contours, fligth_height)
         max_temperature = self.calcule_max_temperature(Matrix_Temperatures)
-        print("Max area:", max_areaM2)
-        print("max temperature:", max_temperature)
+        #print("Max area:", max_areaM2)
+        #print("max temperature:", max_temperature)
         fuzzyOutput = self.fuzzy_system.fuzzy_system_inference(max_temperature, max_areaM2)
         
         fire_prob = fuzzyOutput.alert_prob
-        print("Fire Prob:", fire_prob)
+        #print("Fire Prob:", fire_prob)
 
         if fuzzyOutput.membership_alert_orange > 0.5:
             alert_level = "orange"

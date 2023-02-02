@@ -2,14 +2,20 @@ import ctypes
 from ctypes import *
 import numpy as np
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BUFFER_SIZE = 350000
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
 VISIBLE_IMAGE_HEIGTH = 1440
 VISIBLE_IMAGE_WIDTH = 1080
+CFLIRONE_CAPTURE_LIB = os.environ.get("CFLIRONE_CAPTURE_LIB")
 
-cflironecapture = ctypes.CDLL("./cflironecapture/flironecapture.so")
+cwd = os.getcwd()
+
+cflironecapture = ctypes.CDLL(CFLIRONE_CAPTURE_LIB)
 
 class ThermalFrame:
     def __init__(self, jpg_size, thermal_size, payload_size , tframe_data ):
