@@ -103,7 +103,8 @@ class System:
 
                     self.notify_alert(fire_prob, fireDetectionData)
 
-                    thermal_frame.save_images()
+                
+                thermal_frame.save_images()
                     #stop_read_radar = True
                     #break
             
