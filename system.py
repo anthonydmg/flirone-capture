@@ -53,6 +53,7 @@ class System:
         self.gps_reciever = GPS_RECEIVER()
 
     def run(self):
+        ## Connect Flir one
         opened = self.flirone_capture.open_device()
 
         if opened:
@@ -60,10 +61,11 @@ class System:
         else:
             print("Ocurrio un error al memento de abrir dispositivo")
             exit(0)
-
+        ## Conenct Websockets to Interface
         self.sio.connect('http://localhost:5055', wait_timeout = 10)
         self.sio.emit("startFireDetection", "Comienzar Detecction")
 
+        ## Connect Module Radar
         success = self.distanceDetector.connect()
 
         if success:
@@ -72,6 +74,7 @@ class System:
         else:
             print("XM132 no se puedo conectar")
 
+        ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
 
 
