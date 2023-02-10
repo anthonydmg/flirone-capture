@@ -22,10 +22,25 @@ THERMAL_IMAGE_WIDTH = 60
 INIT_FLIGHT_HEIGHT = 10
 INIT_FLIGHT_SPEED = 30
 stop_read_radar = False
+stop_read_location = False
 SH = 0.6136
 SW = 0.620
 hfov = 38
 vfov = 50
+
+CURRENT_LOCATION = {"latitude": "", "longitude": ""}
+
+def read_location(stop_read_location, gps_reciever):
+    while True:
+        print("Thread runing Location")
+        location = gps_reciever.get_current_location()
+        print("Location: ", location)
+        if location["latitude"]!= "" and location["longitude"]!= "":
+            CURRENT_LOCATION = location
+        time.sleep(0.3)
+        if stop_read_location():
+            distanceDetector.close()
+            break
 
 def read_distance(stop_read):
     while True:
@@ -74,9 +89,16 @@ class System:
         else:
             print("XM132 no se puedo conectar")
 
+        
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
 
+        ## gps location
+
+        self.gps_reciever.get_current_location()
+        
+        if self.gps_reciever.connected:
+            self.start_read_location()
 
         while True:
             thermal_frame = self.flirone_capture.get_thermal_frame()
@@ -96,7 +118,7 @@ class System:
                     fireDetectionData = fireDetectionOuput.fireDetectionData
                     ## GET GPS LOCATION
                     
-                    location = self.gps_reciever.get_current_location()
+                    location = CURRENT_LOCATION
 
                     fireDetectionData.set_latitud(location["latitude"])
                     fireDetectionData.set_longitud(location["longitude"])
@@ -129,9 +151,14 @@ class System:
     
     def start_read_distance(self):
         self.distanceDetector.start()
-        t1 = threading.Thread(target = read_distance, args = (lambda : stop_read_radar,))
+        t1 = threading.Thread(target = read_location, args = (lambda : stop_read_radar,))
         t1.start()
        
+
+    def start_read_location(self):
+        t2 = threading.Thread(target = read_location, args = (lambda : stop_read_location, self.gps_reciever))
+        t2.start()
+
     def notify_alert(self, alert_prob, fireDetectionOuput):
         now = datetime.now() # current date and time
         date_time = now.strftime("%m/%d/%Y, %H:%M:%S")

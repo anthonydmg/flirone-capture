@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Demo</title>
+    </head>
+    <body>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <img id = "image"/>
+        <script>
+            image_tag = $('#imagebox')
+            $.ajax({
+                url: "http://localhost:5055/image",
+                type : "POST",
+                contentType: "application/json",
+                dataType: 'json',
+                data : JSON.stringify({}),
+                headers: {
+                    "accept": "application/json",
+                    "Access-Control-Allow-Origin":"*"
+                },
+                error: function(data){
+                    console.log(data)
+                },
+                success: function(data){
+                    img_base64 = data['image']
+                    image_tag.attr('src', 'data:image/jpeg;base64,' + img_base64)
+                }
+
+            })
+        </script>
+    </body>
+</html>

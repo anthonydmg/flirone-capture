@@ -1,7 +1,6 @@
 from gps import *
 import time
 
-
 class GPS_RECEIVER:
     def __init__(self):
         self.gpds = gps(mode=WATCH_ENABLE|WATCH_NEWSTYLE)
@@ -34,6 +33,31 @@ class GPS_RECEIVER:
 
 
 if __name__ == "__main__":
-    gps_receiver = GPS_RECEIVER()
-    location = gps_receiver.get_current_location()
-    print(location)
+    gps_reciever = GPS_RECEIVER()
+    CURRENT_LOCATION = {"latitude": "", "longitude": ""}
+
+    def read_location(stop_read_location, gps_reciever):
+        while True:
+            print("Thread runing Location")
+            location = gps_reciever.get_current_location()
+            print("Location: ", location)
+            if location["latitude"]!= "" and location["longitude"]!= "":
+                CURRENT_LOCATION = location
+            time.sleep(0.3)
+            if stop_read_location():
+                distanceDetector.close()
+                break
+    
+        
+    stop_read_location = False
+
+    def start_read_location():
+        import threading
+        
+        t2 = threading.Thread(target = read_location, args = (lambda : stop_read_location, gps_reciever))
+        t2.start()
+
+    gps_reciever.get_current_location()
+    print(gps_reciever.connected)   
+    if gps_reciever.connected:
+            start_read_location()
