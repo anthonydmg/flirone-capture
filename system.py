@@ -30,17 +30,17 @@ vfov = 50
 
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-def read_location(stop_read_location, gps_reciever):
+def read_location(stop_read, gps_reciever):
     while True:
         print("Thread runing Location")
         location = gps_reciever.get_current_location()
-        print("Location: ", location)
         if location["latitude"]!= "" and location["longitude"]!= "":
-            CURRENT_LOCATION = location
-        time.sleep(0.3)
-        if stop_read_location():
-            distanceDetector.close()
+            CURRENT_LOCATION["latitude"] = location["latitude"]
+            CURRENT_LOCATION["longitude"] = location["longitude"]
+        time.sleep(0.2)
+        if stop_read():
             break
+    
 
 def read_distance(stop_read):
     while True:
@@ -100,6 +100,7 @@ class System:
         if self.gps_reciever.connected:
             self.start_read_location()
 
+
         while True:
             thermal_frame = self.flirone_capture.get_thermal_frame()
 
@@ -118,10 +119,10 @@ class System:
                     fireDetectionData = fireDetectionOuput.fireDetectionData
                     ## GET GPS LOCATION
                     
-                    location = CURRENT_LOCATION
+                    #location = CURRENT_LOCATION
 
-                    fireDetectionData.set_latitud(location["latitude"])
-                    fireDetectionData.set_longitud(location["longitude"])
+                    fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
+                    fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
 
                     self.notify_alert(fire_prob, fireDetectionData)
 

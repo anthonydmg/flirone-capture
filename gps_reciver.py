@@ -36,16 +36,15 @@ if __name__ == "__main__":
     gps_reciever = GPS_RECEIVER()
     CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-    def read_location(stop_read_location, gps_reciever):
+    def read_location(stop_read, gps_reciever):
         while True:
             print("Thread runing Location")
             location = gps_reciever.get_current_location()
-            print("Location: ", location)
             if location["latitude"]!= "" and location["longitude"]!= "":
-                CURRENT_LOCATION = location
+                CURRENT_LOCATION["latitude"] = location["latitude"]
+                CURRENT_LOCATION["longitude"] = location["longitude"]
             time.sleep(0.3)
-            if stop_read_location():
-                distanceDetector.close()
+            if stop_read():
                 break
     
         
@@ -61,3 +60,10 @@ if __name__ == "__main__":
     print(gps_reciever.connected)   
     if gps_reciever.connected:
             start_read_location()
+
+    import time
+    print("Sleep 1 second")
+    time.sleep(5)
+    stop_read_location = True
+    print("CURRENT LOCATION:\n")
+    print(CURRENT_LOCATION)
