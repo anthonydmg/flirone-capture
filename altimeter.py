@@ -1,3 +1,4 @@
+import argparse
 import math
 import time 
 from bmp280 import BMP280
@@ -7,9 +8,7 @@ import os
 try:
    from smbus2 import SMBus
 except ImportError:
-  from smbus import SMBus
-
-#print("Temperatura y presion:\n")
+   from smbus import SMBus
 
 P0 = 11000 # presion en el puntho inicial
 
@@ -30,7 +29,18 @@ class Altimeter:
             self.P0 = params["P0"]
             
    def inicialize_p0(self):
+      print("Inicializando Presion de region base (P0)...")
       self.P0 = self.read_pressure()
+      num_reads = 10
+      delay = 1 # retraso en segundos
+      cum_P = 0
+      for _ in range(num_reads):
+         P = self.read_pressure()
+         cum_P += P
+         time.sleep(0.5)
+      
+      self.P0 = cum_P/ num_reads
+      print("Guardando P0 en alimeter_params.json")
       with open("altimeter_params.json", "w") as f:
          json.dump({"P0": self.P0},f)
 
@@ -39,18 +49,36 @@ class Altimeter:
 
    def read_abolute_alture(self):
       P = self.read_pressure()
+      print("Presion P:", P)
       return 8453.669 * math.log(self.P0/P)
    def read_alture_over_sea_level(self):
       P = self.read_pressure()
       return 8453.669 * math.log(PRESION_OVER_SEA_LEVEL/P)
 
 
-altimeter = Altimeter()
+def inicializate_altimeter():
+   altimeter = Altimeter()
+   altimeter.inicialize_p0()
 
-h =  altimeter.read_abolute_alture()
-P = altimeter.read_pressure()
-h_sea_level = altimeter.read_alture_over_sea_level()
 
-print("Altura sobre el nivel del mar:", h_sea_level)
-print("Altitud:", h)
-print("Presion:", P)
+
+if __name__ == "__main__":
+   parser = argparse.ArgumentParser(description = "altimeter BMP280",
+				    formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+   parser.add_argument("-i", "--init", default = False)
+   
+   args = parser.parse_args()
+   config = vars(args)
+   print(config)
+   
+   init = True if config["init"] == "True" else False
+   altimeter = Altimeter()
+   if init == True:
+      altimeter.inicialize_p0()
+   else:
+      h =  altimeter.read_abolute_alture()
+      P = altimeter.read_pressure()
+      h_sea_level = altimeter.read_alture_over_sea_level()
+      print("Altura sobre el nivel del mar:", h_sea_level)
+      print("Altitud:", h) 
+      print("Presion:", P)

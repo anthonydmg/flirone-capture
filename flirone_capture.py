@@ -3,6 +3,7 @@ from ctypes import *
 import numpy as np
 import os
 from dotenv import load_dotenv
+import gc
 
 load_dotenv()
 
@@ -113,6 +114,10 @@ class ThermalFrame:
             self.getVisibleFrameRGB()
 
         cflironecapture.save_flirone_images(path_char, self.gray16frame, THERMAL_IMAGE_WIDTH, THERMAL_IMAGE_HEIGTH, self.vframe_color, VISIBLE_IMAGE_WIDTH, VISIBLE_IMAGE_HEIGTH)
+    def clear(self):
+        del self.vframe_color
+        del self.gray16frame
+        gc.collect()
 
 class FlirOneCapture:
     def __init__(self):

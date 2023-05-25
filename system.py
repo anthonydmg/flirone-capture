@@ -7,6 +7,7 @@ import socketio
 from datetime import datetime
 import time
 from flirone_capture import FlirOneCapture
+import gc
 
 from module_radar import ModuleDistanceDetector
 from gps_reciver import GPS_RECEIVER
@@ -14,7 +15,7 @@ import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
 #sio = socketio.Client()
 
-FRAME_RATE = 2
+FRAME_RATE = 1
 
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
@@ -34,6 +35,7 @@ def read_location(stop_read, gps_reciever):
     while True:
         print("Thread runing Location")
         location = gps_reciever.get_current_location()
+        print("Read location: \n", location)
         if location["latitude"]!= "" and location["longitude"]!= "":
             CURRENT_LOCATION["latitude"] = location["latitude"]
             CURRENT_LOCATION["longitude"] = location["longitude"]
@@ -92,7 +94,11 @@ class System:
         
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
+        
+        if frame_rate > 8.0:
+            frame_rate = 8.0
 
+        print(".........Frame Rate:...............................", frame_rate)
         ## gps location
 
         self.gps_reciever.get_current_location()
@@ -100,14 +106,21 @@ class System:
         if self.gps_reciever.connected:
             self.start_read_location()
 
-
+       
+        frame_rate_save = 10
+        prev_time = 0
+        prev_time_save = 0 
+        
         while True:
             thermal_frame = self.flirone_capture.get_thermal_frame()
 
             ## Fire detection
-            prevTime = 0
-            time_elapsed = time.time() - prevTime
+           # prevTime = 0
+            time_elapsed = time.time() - prev_time
             
+            #prevTimeSave = 0
+            time_elapsed_save = time.time() - prev_time_save
+
             if (time_elapsed > (1 / frame_rate)):
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 
@@ -120,15 +133,21 @@ class System:
                     ## GET GPS LOCATION
                     
                     #location = CURRENT_LOCATION
-
+                    
+                    print("CURRENT_LOCATION", CURRENT_LOCATION)
                     fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                     fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
 
                     self.notify_alert(fire_prob, fireDetectionData)
+                    #thermal_frame.save_images()
+                prev_time =  time.time()
 
-                
+            
+            if (time_elapsed_save > (1 / frame_rate_save)):
+                print("\n\n...........................Guardando Imagenes.............................................................................\n")
                 thermal_frame.save_images()
-                    #stop_read_radar = True
+                prev_time_save = time.time()
+            #stop_read_radar = True
                     #break
             
             if self.show_frames:
@@ -145,6 +164,11 @@ class System:
                 cv2.resizeWindow("VisibleImage", 640, 480)
                 cv2.imshow("VisibleImage", vframe_image)
                 cv2.waitKey(20)
+            
+            
+            thermal_frame.clear()
+            del thermal_frame
+            gc.collect()
 
 
         
@@ -152,7 +176,7 @@ class System:
     
     def start_read_distance(self):
         self.distanceDetector.start()
-        t1 = threading.Thread(target = read_location, args = (lambda : stop_read_radar,))
+        t1 = threading.Thread(target = read_distance, args = (lambda : stop_read_radar,))
         t1.start()
        
 
