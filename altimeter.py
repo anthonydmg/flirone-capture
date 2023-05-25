@@ -17,17 +17,26 @@ C = 8453.669
 PRESION_OVER_SEA_LEVEL = 1013.25
 
 class Altimeter:
-   def __init__(self):
-      bus = SMBus(1)
-      self.bmp280 = BMP280(i2c_dev = bus)
-      if not os.path.isfile("altimeter_params.json"):
-         self.inicialize_p0()
-      else:
-         with open("altimeter_params.json", "r") as f:
-            params = json.load(f)
-            print(params)
-            self.P0 = params["P0"]
-            
+  # def __init__(self):
+   def connect(self):
+      try:
+         bus = SMBus(1)
+         self.bmp280 = BMP280(i2c_dev = bus)
+
+         if not os.path.isfile("altimeter_params.json"):
+            self.inicialize_p0()
+         else:
+            with open("altimeter_params.json", "r") as f:
+               params = json.load(f)
+               print(params)
+               self.P0 = params["P0"]
+
+         return True
+
+      except Exception as err:
+         print(f"Error {err=}, {type(err)=}")
+         return False
+   
    def inicialize_p0(self):
       print("Inicializando Presion de region base (P0)...")
       self.P0 = self.read_pressure()
@@ -47,20 +56,21 @@ class Altimeter:
    def read_pressure(self):
       return self.bmp280.get_pressure()
 
-   def read_abolute_alture(self):
+   def calculate_absolute_alture(self, P0, P):
+      return 8453.669 * math.log(self.P0/P)
+
+   def read_absolute_alture(self):
       P = self.read_pressure()
       print("Presion P:", P)
-      return 8453.669 * math.log(self.P0/P)
+      return calculate_absolute_alture(self, self.P0, P)
+   
    def read_alture_over_sea_level(self):
       P = self.read_pressure()
-      return 8453.669 * math.log(PRESION_OVER_SEA_LEVEL/P)
-
+      return calculate_absolute_alture(self, PRESION_OVER_SEA_LEVEL, P)
 
 def inicializate_altimeter():
    altimeter = Altimeter()
    altimeter.inicialize_p0()
-
-
 
 if __name__ == "__main__":
    parser = argparse.ArgumentParser(description = "altimeter BMP280",
@@ -80,5 +90,5 @@ if __name__ == "__main__":
       P = altimeter.read_pressure()
       h_sea_level = altimeter.read_alture_over_sea_level()
       print("Altura sobre el nivel del mar:", h_sea_level)
-      print("Altitud:", h) 
+      print("Altitud:", h)
       print("Presion:", P)

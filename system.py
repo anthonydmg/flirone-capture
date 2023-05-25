@@ -13,7 +13,8 @@ from module_radar import ModuleDistanceDetector
 from gps_reciver import GPS_RECEIVER
 import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
-#sio = socketio.Client()
+from utils import StreamingMovingAverage
+from altimeter import Altimeter
 
 FRAME_RATE = 1
 
@@ -24,11 +25,12 @@ INIT_FLIGHT_HEIGHT = 10
 INIT_FLIGHT_SPEED = 30
 stop_read_radar = False
 stop_read_location = False
+stop_read_bmp280 = False
 SH = 0.6136
 SW = 0.620
 hfov = 38
 vfov = 50
-
+CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
 def read_location(stop_read, gps_reciever):
@@ -42,7 +44,18 @@ def read_location(stop_read, gps_reciever):
         time.sleep(0.2)
         if stop_read():
             break
-    
+
+def read_alture(stop_read, altimeter):
+    streaming_moving_average = StreamingMovingAverage(5)
+    while True:
+        print("Thread runing Location")
+        P = altimeter.read_pressure()
+        mv_avg_P = streaming_moving_average.process(P)
+        CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
+        print("CURRENT ALTURE: \n", CURRENT_ALTURE)
+        time.sleep(0.5)
+        if stop_read():
+            break
 
 def read_distance(stop_read):
     while True:
@@ -68,6 +81,7 @@ class System:
         self.show_frames = show_frames
         self.overlap = overlap
         self.gps_reciever = GPS_RECEIVER()
+        self.altimeter = Altimeter()
 
     def run(self):
         ## Connect Flir one
@@ -83,9 +97,9 @@ class System:
         self.sio.emit("startFireDetection", "Comienzar Detecction")
 
         ## Connect Module Radar
-        success = self.distanceDetector.connect()
+        success_xm132 = self.distanceDetector.connect()
 
-        if success:
+        if success_xm132:
             print("XM132 conectado exitosamente")
             self.start_read_distance()
         else:
@@ -124,7 +138,7 @@ class System:
             if (time_elapsed > (1 / frame_rate)):
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 
-                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures, self.fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
+                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,CURRENT_ALTURE, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
 
                 if fire_prob > 0.2:
@@ -133,7 +147,6 @@ class System:
                     ## GET GPS LOCATION
                     
                     #location = CURRENT_LOCATION
-                    
                     print("CURRENT_LOCATION", CURRENT_LOCATION)
                     fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                     fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
@@ -165,24 +178,22 @@ class System:
                 cv2.imshow("VisibleImage", vframe_image)
                 cv2.waitKey(20)
             
-            
             thermal_frame.clear()
             del thermal_frame
             gc.collect()
 
-
-        
-
-    
     def start_read_distance(self):
         self.distanceDetector.start()
         t1 = threading.Thread(target = read_distance, args = (lambda : stop_read_radar,))
         t1.start()
-       
-
+  
     def start_read_location(self):
         t2 = threading.Thread(target = read_location, args = (lambda : stop_read_location, self.gps_reciever))
         t2.start()
+
+    def start_read_alture_bmp280(self):
+        t3 = threading.Thread(target = read_alture, args = (lambda : stop_read_bmp280, self.altimeter))
+        t3.start()
 
     def notify_alert(self, alert_prob, fireDetectionOuput):
         now = datetime.now() # current date and time
@@ -198,8 +209,7 @@ class System:
             "time": date_time
         }
 
-        #print("Fuego encontrado!!:", data) 
-        
+
         self.sio.emit("fireDetected", data)
 
     def calculateLongitudeVFov(self, altura):
