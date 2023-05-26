@@ -87,7 +87,7 @@ if __name__ == "__main__":
    if init == True:
       altimeter.inicialize_p0()
    else:
-      h =  altimeter.read_abolute_alture()
+      h =  altimeter.read_absolute_alture()
       P = altimeter.read_pressure()
       h_sea_level = altimeter.read_alture_over_sea_level()
       print("Altura sobre el nivel del mar:", h_sea_level)
