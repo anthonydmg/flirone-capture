@@ -62,11 +62,11 @@ class Altimeter:
    def read_absolute_alture(self):
       P = self.read_pressure()
       print("Presion P:", P)
-      return calculate_absolute_alture(self, self.P0, P)
+      return self.calculate_absolute_alture(self, self.P0, P)
    
    def read_alture_over_sea_level(self):
       P = self.read_pressure()
-      return calculate_absolute_alture(self, PRESION_OVER_SEA_LEVEL, P)
+      return self.calculate_absolute_alture(self, PRESION_OVER_SEA_LEVEL, P)
 
 def inicializate_altimeter():
    altimeter = Altimeter()
