@@ -34,7 +34,7 @@ vfov = 50
 CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-data = {"presion": 0,  "alture": 0 , "altitud_sobre_nivel_mar": 0, "hora": datetime.now(), "visible_image": "", "thermal_image":""}
+data = {"presion": 0,  "alture": 0 , "alture_over_sea_level": 0, "time": datetime.now(), "visible_image": "", "thermal_image":""}
 
 def read_location(stop_read, gps_reciever):
     while True:
@@ -151,8 +151,11 @@ class System:
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 current_data = data.copy() 
 
-                print("\nCURRENT_ALTURE:", CURRENT_ALTURE)
-                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,CURRENT_ALTURE, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
+                print("\nCURRENT_ALTURE:", current_data["alture"])
+
+                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 1
+
+                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
 
                 if fire_prob > 0.2:
