@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 import time
-
+import os
 #data = { "presion": 101451, "alture": 100 , "altitud_sobre_nivel_mar": 1010, "hora":  datetime.now()}
 
 #req_fields = ["presion", "alture", "altitud_sobre_nivel_mar", "hora"]
@@ -27,9 +27,11 @@ class StreamingMovingAverage:
         return float(self.sum) / len(self.values)
 
 def create_csv(name_base = "fire_detection_",req_fields = ["presion", "alture", "altitud_sobre_nivel_mar", "hora"]):
+    dir_path = "./registers"
+    os.makedirs(dir_path, exist_ok= True)
     now = datetime.now()
     date_time_str = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
-    file_name = f"{name_base}{date_time_str}.csv"
+    file_name = f"{dir_path}/{name_base}{date_time_str}.csv"
     with open(file_name, "a", newline= "") as f_output:
         cv_output = csv.DictWriter(f_output, fieldnames = req_fields)
         cv_output.writeheader()

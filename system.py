@@ -15,6 +15,7 @@ import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
 from utils import StreamingMovingAverage
 from altimeter import Altimeter
+from utils import create_csv, register_in_csv
 
 FRAME_RATE = 1
 
@@ -32,6 +33,8 @@ hfov = 38
 vfov = 50
 CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
+
+data = {"presion": 0,  "alture": 0 , "altitud_sobre_nivel_mar": 0, "hora": datetime.now()}
 
 def read_location(stop_read, gps_reciever):
     while True:
@@ -126,7 +129,7 @@ class System:
         if self.gps_reciever.connected:
             self.start_read_location()
 
-       
+        self.file_name = create_csv()
         frame_rate_save = 10
         prev_time = 0
         prev_time_save = 0 
@@ -143,6 +146,8 @@ class System:
 
             if (time_elapsed > (1 / frame_rate)):
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
+                current_data = data.copy() 
+
                 print("\nCURRENT_ALTURE:", CURRENT_ALTURE)
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,CURRENT_ALTURE, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
@@ -161,6 +166,7 @@ class System:
                     #thermal_frame.save_images()
                 prev_time =  time.time()
 
+                register_in_csv(self.file_name, current_data)
             
             if (time_elapsed_save > (1 / frame_rate_save)):
                 print("\n\n...........................Guardando Imagenes.............................................................................\n")
@@ -214,8 +220,7 @@ class System:
             "distance": str(fireDetectionOuput.fligth_height),
             "time": date_time
         }
-
-
+        
         self.sio.emit("fireDetected", data)
 
     def calculateLongitudeVFov(self, altura):
