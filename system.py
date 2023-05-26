@@ -151,8 +151,8 @@ class System:
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 current_data = data.copy() 
 
-                print("\nCURRENT_ALTURE:", current_data["alture"])
-
+                #print("\nCURRENT_ALTURE:", current_data["alture"])
+                print("\ncurrent_data:",current_data)
                 current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 1
 
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
