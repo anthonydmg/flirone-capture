@@ -58,7 +58,7 @@ def read_alture(stop_read, altimeter):
         CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
         data["presion"] = mv_avg_P
         data["alture"] = CURRENT_ALTURE
-        data["altitud_sobre_nivel_mar"] =  altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, mv_avg_P)
+        data["alture_over_sea_level"] =  altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, mv_avg_P)
         #print("CURRENT ALTURE: \n", CURRENT_ALTURE)
         time.sleep(0.5)
         if stop_read():
