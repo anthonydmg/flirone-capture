@@ -46,13 +46,14 @@ def read_location(stop_read, gps_reciever):
             break
 
 def read_alture(stop_read, altimeter):
+    global CURRENT_ALTURE
     streaming_moving_average = StreamingMovingAverage(5)
     while True:
         print("Thread runing Location")
         P = altimeter.read_pressure()
         mv_avg_P = streaming_moving_average.process(P)
         CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
-        print("CURRENT ALTURE: \n", CURRENT_ALTURE)
+        #print("CURRENT ALTURE: \n", CURRENT_ALTURE)
         time.sleep(0.5)
         if stop_read():
             break
@@ -105,7 +106,12 @@ class System:
         else:
             print("XM132 no se puedo conectar")
 
-        
+        succes_altimeter = self.altimeter.connect()
+        if succes_altimeter:
+            self.start_read_alture_bmp280()
+            print("Altimeter conectado exitosamente")
+        else:
+            print("Altimeter no conectado")
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
@@ -137,7 +143,7 @@ class System:
 
             if (time_elapsed > (1 / frame_rate)):
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
-                
+                print("\nCURRENT_ALTURE:", CURRENT_ALTURE)
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,CURRENT_ALTURE, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
 
@@ -147,7 +153,7 @@ class System:
                     ## GET GPS LOCATION
                     
                     #location = CURRENT_LOCATION
-                    print("CURRENT_LOCATION", CURRENT_LOCATION)
+                    print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
                     fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                     fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
 

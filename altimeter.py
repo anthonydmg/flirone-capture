@@ -83,6 +83,7 @@ if __name__ == "__main__":
    
    init = True if config["init"] == "True" else False
    altimeter = Altimeter()
+   altimeter.connect()
    if init == True:
       altimeter.inicialize_p0()
    else:
