@@ -763,7 +763,7 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
     return bmp_buffer;
 }
 
-bool save_flir_images(char * path, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
+bool save_flir_images_prev(char * path, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
     long long ms = current_timestamp();
     char thermal_image_name[100];
     sprintf(thermal_image_name, "%s/flir_thermal_16gray_%lld.tiff", path ,ms);
@@ -774,6 +774,19 @@ bool save_flir_images(char * path, uint16_t * imageGray16, uint32_t thermal_weig
     save_image_16bits_tiff(imageGray16, thermal_image_name , thermal_weight, thermal_heigth, 1 );
 
     save_jpg_image_from_buffer(frame_color, visible_image_name, frame_weight, frame_heigth);
+}
+
+bool save_flir_images(char * path, char * visible_image_name, char * thermal_image_name, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
+    long long ms = current_timestamp();
+    char path_thermal_image[100];
+    sprintf(path_thermal_image, "%s/%s.tiff", path, thermal_image_name);
+
+    char path_visible_image[100];
+    sprintf(path_visible_image, "%s/%s.jpg", path, visible_image_name);
+
+    save_image_16bits_tiff(imageGray16, path_thermal_image , thermal_weight, thermal_heigth, 1 );
+
+    save_jpg_image_from_buffer(frame_color, path_visible_image, frame_weight, frame_heigth);
 }
 
 bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[1440 * 1080 * 3] , uint32_t  &thermal_size , uint32_t  &jpg_size , uint32_t width, uint32_t heigth){
@@ -848,8 +861,8 @@ extern "C" {
         return read_visible_frame_color(tframe_data, frame_color, thermal_size, jpg_size, width, heigth);
     }
     
-    bool save_flirone_images(char * path, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
-        return save_flir_images(path, imageGray16, thermal_weight, thermal_heigth, frame_color,frame_weight,frame_heigth );
+    bool save_flirone_images(char * path,char * visible_image_name, char * thermal_image_name, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
+        return save_flir_images(path, visible_image_name, thermal_image_name, imageGray16, thermal_weight, thermal_heigth, frame_color,frame_weight,frame_heigth );
     }
     
     void load_thermal_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){

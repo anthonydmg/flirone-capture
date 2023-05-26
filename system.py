@@ -34,7 +34,7 @@ vfov = 50
 CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-data = {"presion": 0,  "alture": 0 , "altitud_sobre_nivel_mar": 0, "hora": datetime.now()}
+data = {"presion": 0,  "alture": 0 , "altitud_sobre_nivel_mar": 0, "hora": datetime.now(), "visible_image": "", "thermal_image":""}
 
 def read_location(stop_read, gps_reciever):
     while True:
@@ -56,8 +56,8 @@ def read_alture(stop_read, altimeter):
         P = altimeter.read_pressure()
         mv_avg_P = streaming_moving_average.process(P)
         CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
-        data["presion"] = P
-        data["alture"] = presion
+        data["presion"] = mv_avg_P
+        data["alture"] = CURRENT_ALTURE
         data["altitud_sobre_nivel_mar"] =  altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, mv_avg_P)
         #print("CURRENT ALTURE: \n", CURRENT_ALTURE)
         time.sleep(0.5)
@@ -171,10 +171,14 @@ class System:
 
                 register_in_csv(self.file_name, current_data)
             
-            if (time_elapsed_save > (1 / frame_rate_save)):
+            #if (time_elapsed_save > (1 / frame_rate_save)):
                 print("\n\n...........................Guardando Imagenes.............................................................................\n")
-                thermal_frame.save_images()
-                prev_time_save = time.time()
+                visible_image_name, thermal_image_name = thermal_frame.save_images()
+                current_data["visible_image"] = f"images/{visible_image_name}.jpg"
+                current_data["thermal_image"] = f"images/{thermal_image_name}.tiff"
+                #prev_time_save = time.time()
+
+                register_in_csv(self.file_name, current_data)
             #stop_read_radar = True
                     #break
             

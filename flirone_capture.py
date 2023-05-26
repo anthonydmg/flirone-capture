@@ -4,7 +4,7 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 import gc
-
+from datetime import datetime
 load_dotenv()
 
 BUFFER_SIZE = 350000
@@ -107,13 +107,27 @@ class ThermalFrame:
         path_file = path_file.encode("utf-8")
         path_char = (ctypes.c_char * 100)(*path_file)
 
+        now = datetime.now()
+        date_time_str = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
+
         if self.gray16frame == None:
             self.get_thermal_frame_16_bits()
 
         if self.vframe_color == None:
             self.getVisibleFrameRGB()
 
-        cflironecapture.save_flirone_images(path_char, self.gray16frame, THERMAL_IMAGE_WIDTH, THERMAL_IMAGE_HEIGTH, self.vframe_color, VISIBLE_IMAGE_WIDTH, VISIBLE_IMAGE_HEIGTH)
+        visible_image_name = f"flir_thermal_16gray_{date_time_str}"
+        visible_image_name = visible_image_name.encode("utf-8")
+        visible_image_name_char = (ctypes.c_char * 100)(*visible_image_name)
+
+        thermal_image_name = f"flir_visible_image_{date_time_str}"
+        thermal_image_name = thermal_image_name.encode("utf-8")
+        thermal_image_name_char = (ctypes.c_char * 100)(*thermal_image_name) 
+
+        cflironecapture.save_flirone_images(path_char, visible_image_name_char, thermal_image_name_char, self.gray16frame, THERMAL_IMAGE_WIDTH, THERMAL_IMAGE_HEIGTH, self.vframe_color, VISIBLE_IMAGE_WIDTH, VISIBLE_IMAGE_HEIGTH)
+        
+        return visible_image_name, thermal_image_name
+
     def clear(self):
         del self.vframe_color
         del self.gray16frame
