@@ -14,7 +14,7 @@ from gps_reciver import GPS_RECEIVER
 import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
 from utils import StreamingMovingAverage
-from altimeter import Altimeter
+from altimeter import Altimeter, PRESION_OVER_SEA_LEVEL
 from utils import create_csv, register_in_csv
 
 FRAME_RATE = 1
@@ -56,6 +56,9 @@ def read_alture(stop_read, altimeter):
         P = altimeter.read_pressure()
         mv_avg_P = streaming_moving_average.process(P)
         CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
+        data["presion"] = P
+        data["alture"] = presion
+        data["altitud_sobre_nivel_mar"] =  altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, mv_avg_P)
         #print("CURRENT ALTURE: \n", CURRENT_ALTURE)
         time.sleep(0.5)
         if stop_read():
