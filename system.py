@@ -153,8 +153,8 @@ class System:
 
                 print("\nCURRENT_ALTURE:", current_data["alture"])
 
-                current_alture = current_data["alture"] if current_data["alture"] > 0.0 else 1
-                
+                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 1
+
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
 
