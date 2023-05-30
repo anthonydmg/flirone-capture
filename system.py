@@ -43,7 +43,8 @@ data = { "presion": 0,
          "max_temperature": None, 
          "area_fire": 0,
          "latitud": "",
-         "longitud": ""
+         "longitud": "",
+         "distance_xm132": 0
          }
 
 
@@ -80,8 +81,8 @@ def read_distance(stop_read):
         print("Thread runing")
         distance = distanceDetector.read()
         if distance != 0:
-            fligth_height = distance
-            frameRate = calculateFps(fligth_height)
+            data["distance_xm132"] = distance
+            #frameRate = calculateFps(fligth_height)
         time.sleep(0.4)
         if stop_read():
             distanceDetector.close()
