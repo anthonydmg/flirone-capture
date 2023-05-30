@@ -26,7 +26,7 @@ class StreamingMovingAverage:
             self.sum -= self.values.pop(0)
         return float(self.sum) / len(self.values)
 
-def create_csv(name_base = "fire_detection_",req_fields = ["presion", "alture", "alture_over_sea_level", "time", "visible_image", "thermal_image", "max_temperature", "area_fire", "latitud", "longitud"]):
+def create_csv(name_base = "fire_detection_",req_fields = ["presion", "alture", "alture_over_sea_level", "time", "visible_image", "thermal_image", "max_temperature", "area_fire", "latitud", "longitud", "distance_xm132"]):
     dir_path = "./registers"
     os.makedirs(dir_path, exist_ok= True)
     now = datetime.now()
@@ -38,7 +38,7 @@ def create_csv(name_base = "fire_detection_",req_fields = ["presion", "alture", 
     print(date_time_str)
     return file_name
 
-def register_in_csv(name_file, data ,req_fields = ["presion", "alture", "alture_over_sea_level", "time", "visible_image", "thermal_image", "max_temperature", "area_fire", "latitud", "longitud"]):
+def register_in_csv(name_file, data ,req_fields = ["presion", "alture", "alture_over_sea_level", "time", "visible_image", "thermal_image", "max_temperature", "area_fire", "latitud", "longitud", "distance_xm132"]):
     with open(name_file, "a", newline= "") as f_output:
         cv_output = csv.DictWriter(f_output, fieldnames = req_fields)
         cv_output.writerow(data)
