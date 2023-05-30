@@ -34,7 +34,18 @@ vfov = 50
 CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-data = {"presion": 0,  "alture": 0 , "alture_over_sea_level": 0, "time": datetime.now(), "visible_image": "", "thermal_image":""}
+data = { "presion": 0,  
+         "alture": 0, 
+         "alture_over_sea_level": 0, 
+         "time": datetime.now(), 
+         "visible_image": "", 
+         "thermal_image":"" , 
+         "max_temperature": None, 
+         "area_fire": 0,
+         "latitud": "",
+         "longitud": ""
+         }
+
 
 def read_location(stop_read, gps_reciever):
     while True:
@@ -153,27 +164,26 @@ class System:
 
                 #print("\nCURRENT_ALTURE:", current_data["alture"])
                 print("\ncurrent_data:",current_data)
-                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 1
+                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 0.5
 
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
-
+                fireDetectionData = fireDetectionOuput.fireDetectionData
+                fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
+                fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
+                print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
                 if fire_prob > 0.2:
-
-                    fireDetectionData = fireDetectionOuput.fireDetectionData
-                    ## GET GPS LOCATION
-                    
                     #location = CURRENT_LOCATION
-                    print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
-                    fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
-                    fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
-
+                 
                     self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
                 prev_time =  time.time()
 
-                register_in_csv(self.file_name, current_data)
-            
+                current_data["max_temperature"] =  fireDetectionData.max_temperature
+                current_data["area_fire"] =  fireDetectionData.max_areaM2
+                current_data["latitud"] = fireDetectionData.latitud
+                current_data["longitud"] = fireDetectionData.longitud
+
             #if (time_elapsed_save > (1 / frame_rate_save)):
                 print("\n\n...........................Guardando Imagenes.............................................................................\n")
                 visible_image_name, thermal_image_name = thermal_frame.save_images()

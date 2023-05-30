@@ -116,11 +116,11 @@ class ThermalFrame:
         if self.vframe_color == None:
             self.getVisibleFrameRGB()
 
-        visible_image_name = f"flir_thermal_16gray_{date_time_str}"
+        visible_image_name = f"flir_visible_image_{date_time_str}"
         visible_image_name = visible_image_name.encode("utf-8")
         visible_image_name_char = (ctypes.c_char * 100)(*visible_image_name)
 
-        thermal_image_name = f"flir_visible_image_{date_time_str}"
+        thermal_image_name = f"flir_thermal_16gray_{date_time_str}"
         thermal_image_name = thermal_image_name.encode("utf-8")
         thermal_image_name_char = (ctypes.c_char * 100)(*thermal_image_name) 
 
