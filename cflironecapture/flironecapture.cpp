@@ -521,7 +521,7 @@ bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_da
                 }
     
                 if(t_frame_iscomplete(pyload_size, pointer)){
-                      printf("\nSe complento el payload : pyload_size = %d, pointer= %d, thermal_size=%d, jpg_size =%d\n", pyload_size, pointer, thermal_size, jpg_size);
+                      printf("\nSe completo el payload : pyload_size = %d, pointer= %d, thermal_size=%d, jpg_size =%d\n", pyload_size, pointer, thermal_size, jpg_size);
                    break;
                 }
             }
