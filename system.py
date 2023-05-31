@@ -133,9 +133,9 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 8.0:
-            frame_rate = 8.0
-
+        if frame_rate > 7.0:
+            frame_rate = 7.0
+        frame_rate = 7.0
         print(".........Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -160,26 +160,27 @@ class System:
             time_elapsed_save = time.time() - prev_time_save
 
             if (time_elapsed > (1 / frame_rate)):
+                print("\n\nFrame Rate:", frame_rate)
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 current_data = data.copy() 
 
                 #print("\nCURRENT_ALTURE:", current_data["alture"])
-                print("\ncurrent_data:",current_data)
-                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 0.5
+                #print("\ncurrent_data:",current_data)
+                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 2.0
 
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
                 fireDetectionData = fireDetectionOuput.fireDetectionData
                 fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                 fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
-                print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
+                #print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
                 if fire_prob > 0.2:
                     #location = CURRENT_LOCATION
                  
                     self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
                 prev_time =  time.time()
-
+                current_data["time"] = datetime.now()
                 current_data["max_temperature"] =  fireDetectionData.max_temperature
                 current_data["area_fire"] =  fireDetectionData.max_areaM2
                 current_data["latitud"] = fireDetectionData.latitud
