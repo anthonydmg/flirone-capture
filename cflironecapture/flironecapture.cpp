@@ -182,7 +182,7 @@ bool FlirOneCapture::load_color_map(){
 
 int FlirOneCapture::read_stream(libusb_device_handle * device_handle, uint8_t *buffer, uint32_t &size ){
     int length_stream;
-    printf("Read Buffer = %d\n", device_handle);
+    //printf("Read Buffer = %d\n", device_handle);
     libusb_bulk_transfer(device_handle, 0x85, buffer, size, &length_stream, 100);
     printf("Actual length bulk: %d \n", length_stream);
    

@@ -50,7 +50,7 @@ data = { "presion": 0,
 
 def read_location(stop_read, gps_reciever):
     while True:
-        print("Thread runing Location")
+        #print("Thread runing Location")
         location = gps_reciever.get_current_location()
         print("Read location: \n", location)
         if location["latitude"]!= "" and location["longitude"]!= "":
@@ -64,7 +64,7 @@ def read_alture(stop_read, altimeter):
     global CURRENT_ALTURE
     streaming_moving_average = StreamingMovingAverage(5)
     while True:
-        print("Thread runing Location")
+        #print("Thread runing Location")
         P = altimeter.read_pressure()
         mv_avg_P = streaming_moving_average.process(P)
         CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
@@ -133,9 +133,8 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 7.0:
-            frame_rate = 7.0
-        frame_rate = 7.0
+        if frame_rate > 5.0:
+            frame_rate = 5.0
         print(".........Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -164,8 +163,6 @@ class System:
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 current_data = data.copy() 
 
-                #print("\nCURRENT_ALTURE:", current_data["alture"])
-                #print("\ncurrent_data:",current_data)
                 current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 2.0
 
                 fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
@@ -173,10 +170,7 @@ class System:
                 fireDetectionData = fireDetectionOuput.fireDetectionData
                 fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                 fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
-                #print("\n CURRENT_LOCATION:", CURRENT_LOCATION)
                 if fire_prob > 0.2:
-                    #location = CURRENT_LOCATION
-                 
                     self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
                 prev_time =  time.time()
