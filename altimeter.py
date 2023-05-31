@@ -113,9 +113,9 @@ if __name__ == "__main__":
             "presion":P ,
             "presion_over_floor": P0, 
             "alture_over_sea_level": h_sea_level, 
-            "altitud_over_sea_level": altimeter.altitude_over_sea_level, 
+            "altitud_over_sea_level": altimeter.altitude_over_sea_level,
+            "actual_altitude": altitude, 
             "abs_alture": h,
-            "actual_altitude": altitude,
             "diff_altutude": altitude - altimeter.altitude_over_sea_level
          }
          
