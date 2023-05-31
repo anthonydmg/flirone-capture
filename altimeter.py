@@ -4,6 +4,7 @@ import time
 from bmp280 import BMP280
 import json
 import os
+from utils import create_csv, register_in_csv
 
 try:
    from smbus2 import SMBus
@@ -92,11 +93,19 @@ if __name__ == "__main__":
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
       print("Altura sobre el nivel del mar: ", h_sea_level)
    else:
-      #h =  altimeter.read_absolute_alture()
-      P = altimeter.read_pressure()
-      P0 = altimeter.P0
-      h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
-      h = altimeter.calculate_absolute_alture(P0,P)
-      print("Altura sobre el nivel del mar:", h_sea_level)
-      print("Altitud:", h)
-      print("Presion:", P)
+      file_name = create_csv(name_base = "altimeter_", req_fields = ["presion", "alture_over_sea_level", "abs_alture"])
+      while True:
+         P = altimeter.read_pressure()
+         P0 = altimeter.P0
+         h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
+         h = altimeter.calculate_absolute_alture(P0,P)
+         data = {"presion":P ,"presion_over_floor": P0, "alture_over_sea_level": h_sea_level, "abs_alture": h}
+         register_in_csv(file_name, data, req_fields = ["presion","presion_over_floor", "alture_over_sea_level", "abs_alture"])
+         time.sleep(0.8)
+      #P = altimeter.read_pressure()
+      #P0 = altimeter.P0
+      #h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
+      #h = altimeter.calculate_absolute_alture(P0,P)
+      #print("Altura sobre el nivel del mar:", h_sea_level)
+      #print("Altitud:", h)
+      #print("Presion:", P)
