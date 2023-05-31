@@ -40,13 +40,13 @@ class Altimeter:
    def inicialize_p0(self):
       print("Inicializando Presion de region base (P0)...")
       self.P0 = self.read_pressure()
-      num_reads = 10
+      num_reads = 20
       delay = 1 # retraso en segundos
       cum_P = 0
       for _ in range(num_reads):
          P = self.read_pressure()
          cum_P += P
-         time.sleep(0.5)
+         time.sleep(1.0)
       
       self.P0 = cum_P/ num_reads
       print("Guardando P0 en alimeter_params.json")
@@ -86,10 +86,17 @@ if __name__ == "__main__":
    altimeter.connect()
    if init == True:
       altimeter.inicialize_p0()
+      P0 = altimeter.P0
+      P =  altimeter.read_pressure()
+      print("Presion en superficie base: ", P0)
+      h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
+      print("Altura sobre el nivel del mar: ", h_sea_level)
    else:
-      h =  altimeter.read_absolute_alture()
+      #h =  altimeter.read_absolute_alture()
       P = altimeter.read_pressure()
-      h_sea_level = altimeter.read_alture_over_sea_level()
+      P0 = altimeter.P0
+      h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
+      h = altimeter.calculate_absolute_alture(P0,P)
       print("Altura sobre el nivel del mar:", h_sea_level)
       print("Altitud:", h)
       print("Presion:", P)
