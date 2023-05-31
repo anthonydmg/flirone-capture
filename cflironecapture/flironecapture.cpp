@@ -472,7 +472,7 @@ bool t_frame_iscomplete(uint32_t pyload_size, uint32_t pointer){
 
 
 bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_data, uint32_t  &jpg_size,  uint32_t  &thermal_size,  uint32_t  &pyload_size ){
-        printf("Inicia lectura\n");
+        //printf("Inicia lectura\n");
         uint8_t buffer[BUF85SIZE];
         uint32_t size = (u_int32_t) sizeof(buffer);
         int mb_idx;
@@ -481,16 +481,16 @@ bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_da
         jpg_size = 0;
         pyload_size = 0;
 
-        printf("Reset\n");
+        //printf("Reset\n");
         FlirOneCapture flirOneCapture;
         bool found_header = false;
 
         while (1)
         {  
-            printf("Init read stream\n");
+            //printf("Init read stream\n");
             int length_stream = flirOneCapture.read_stream(device_handle, tframe_data + pointer, size);
     
-            printf("Fin read stream\n");
+            //printf("Fin read stream\n");
             
             ///thermalFrame->reset();
             
@@ -717,9 +717,9 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
     
     info.err= jpeg_std_error(&jerr);
     jpeg_create_decompress(&info);
-    printf("Creando decompress\n");
+    //printf("Creando decompress\n");
     jpeg_mem_src(&info, jpg_buffer, size);
-    printf("Estableciendo fuente\n");
+    //printf("Estableciendo fuente\n");
     try
     {
         int rc= jpeg_read_header(&info,TRUE);
@@ -791,8 +791,8 @@ bool save_flir_images(char * path, char * visible_image_name, char * thermal_ima
 
 bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[1440 * 1080 * 3] , uint32_t  &thermal_size , uint32_t  &jpg_size , uint32_t width, uint32_t heigth){
     uint8 *  bmp_buffer ;
-    printf("Comenzando la descompresion\n");
-    printf("thermal_size = %d, jpg_size = %d\n", thermal_size, jpg_size);
+    //printf("Comenzando la descompresion\n");
+    //printf("thermal_size = %d, jpg_size = %d\n", thermal_size, jpg_size);
     
     if(!startWithMagicByteJpg(tframe_data + 28 + thermal_size)){
         return false;
@@ -802,7 +802,7 @@ bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[
     
     if (bmp_buffer == NULL)
         return false;
-    printf("Descomprimio la imagen\n");
+    //printf("Descomprimio la imagen\n");
     for(int y = 0; y < heigth; y++){
             for(int x = 0; x< width; x++){
                 uint32_t bmp_offset=(x+y*width)*3;
