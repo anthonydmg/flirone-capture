@@ -100,6 +100,7 @@ if __name__ == "__main__":
          h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
          h = altimeter.calculate_absolute_alture(P0,P)
          data = {"presion":P ,"presion_over_floor": P0, "alture_over_sea_level": h_sea_level, "abs_alture": h}
+         print("\nData:", data)
          register_in_csv(file_name, data, req_fields = ["presion","presion_over_floor", "alture_over_sea_level", "abs_alture"])
          time.sleep(0.8)
       #P = altimeter.read_pressure()
