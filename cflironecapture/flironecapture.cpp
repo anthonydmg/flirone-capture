@@ -451,11 +451,11 @@ FlirOneCapture::FlirOneCapture(){
 
 
 void read_header(uint8_t * buffer, uint32_t & pyload_size, uint32_t & thermal_size, uint32_t & jpg_size){
-    printf("LLamada a read size\n");
+    //printf("LLamada a read size\n");
     pyload_size  = buffer[8]  +  (buffer[9] << 8) + (buffer[10] << 16) + (buffer[11] << 24);
     thermal_size = buffer[12] + (buffer[13] << 8) + (buffer[14] << 16) + (buffer[15] << 24);
     jpg_size     = buffer[16] + (buffer[17] << 8) + (buffer[18] << 16) + (buffer[19] << 24);
-    printf("\n pyload_size = %d, thermal_size=%d, jpg_size =%d\n", pyload_size, thermal_size, jpg_size);
+    //printf("\n pyload_size = %d, thermal_size=%d, jpg_size =%d\n", pyload_size, thermal_size, jpg_size);
     
 }
 
@@ -736,7 +736,7 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
     
    
 
-    printf("Comenzando decompresion\n");
+    //printf("Comenzando decompresion\n");
     
     jpeg_start_decompress(&info);
 
@@ -756,7 +756,7 @@ uint8 * decompress_jpg_image(uint8_t * jpg_buffer, uint32_t size){
         //printf("buffer_array = %d", buffer_array);
         jpeg_read_scanlines(&info,buffer_array,1);
     }
-     printf("Finalizando decompresion\n");
+    //printf("Finalizando decompresion\n");
     jpeg_finish_decompress(&info);
     jpeg_destroy_decompress(&info);
     
