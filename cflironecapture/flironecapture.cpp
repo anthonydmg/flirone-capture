@@ -531,7 +531,7 @@ bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_da
         return true;
     }
 
-void read_gray16(uint8_t tframe_data[350000], uint16_t gray16frame [4800], uint32_t  &thermal_size, uint32_t  &minval_gray, uint32_t  &maxval_gray ){
+void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint32_t  &thermal_size, uint32_t  &minval_gray, uint32_t  &maxval_gray ){
         uint32_t pos;
         uint16_t value;
         for(int y = 0; y < THERMAL_IMAGE_HEIGHT; y++){
