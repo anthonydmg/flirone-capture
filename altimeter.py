@@ -31,6 +31,7 @@ class Altimeter:
                params = json.load(f)
                print(params)
                self.P0 = params["P0"]
+               self.altitude_over_sea_level = ["altitude_over_sea_level"]
 
          return True
 
