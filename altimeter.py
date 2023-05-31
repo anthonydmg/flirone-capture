@@ -44,15 +44,21 @@ class Altimeter:
       num_reads = 20
       delay = 1 # retraso en segundos
       cum_P = 0
+      cum_altitude_over_sea_level = 0
       for _ in range(num_reads):
          P = self.read_pressure()
          cum_P += P
+         cum_altitude_over_sea_level += self.read_altitude()
          time.sleep(1.0)
       
       self.P0 = cum_P/ num_reads
+      self.altitude_over_sea_level = cum_altitude_over_sea_level / num_reads
       print("Guardando P0 en alimeter_params.json")
       with open("altimeter_params.json", "w") as f:
-         json.dump({"P0": self.P0},f)
+         json.dump({"P0": self.P0, "altitude_over_sea_level": self.altitude_over_sea_level},f)
+
+   def read_altitude(self):
+      return self.bmp280.get_altitude()
 
    def read_pressure(self):
       return self.bmp280.get_pressure()
@@ -91,17 +97,29 @@ if __name__ == "__main__":
       P =  altimeter.read_pressure()
       print("Presion en superficie base: ", P0)
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
-      print("Altura sobre el nivel del mar: ", h_sea_level)
+      print("Altura sobre el nivel del mar calculada: ", h_sea_level)
+      print("Altitud sobre el nivel del mar libreria: ", altimeter.altitude_over_sea_level)
    else:
-      file_name = create_csv(name_base = "altimeter_", req_fields = ["presion", "alture_over_sea_level", "abs_alture"])
+      req_fields = ["presion","presion_over_floor", "alture_over_sea_level", "altitud_over_sea_level","actual_altitude", "diff_altutude", "abs_alture"]
+      file_name = create_csv(name_base = "altimeter_", req_fields = req_fields)
       while True:
          P = altimeter.read_pressure()
          P0 = altimeter.P0
          h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
          h = altimeter.calculate_absolute_alture(P0,P)
-         data = {"presion":P ,"presion_over_floor": P0, "alture_over_sea_level": h_sea_level, "abs_alture": h}
+         altitude = altimeter.read_altitude()
+         data = {
+            "presion":P ,
+            "presion_over_floor": P0, 
+            "alture_over_sea_level": h_sea_level, 
+            "altitud_over_sea_level": altimeter.altitude_over_sea_level, 
+            "abs_alture": h,
+            "actual_altitude": altitude,
+            "diff_altutude": altitude - altimeter.altitude_over_sea_level
+         }
+         
          print("\nData:", data)
-         register_in_csv(file_name, data, req_fields = ["presion","presion_over_floor", "alture_over_sea_level", "abs_alture"])
+         register_in_csv(file_name, data, req_fields = req_fields)
          time.sleep(0.8)
       #P = altimeter.read_pressure()
       #P0 = altimeter.P0
