@@ -111,7 +111,8 @@ if __name__ == "__main__":
       P0 = altimeter.P0
       P =  altimeter.read_pressure()
       print("Presion en superficie base: ", P0)
-      print("Promedio de altitud sobre el nivel del mar con la libreria: ", altimeter.altitude_over_sea_level)
+      print("Promedio de altitud sobre el nivel del mar con la libreria bmp280: ", altimeter.altitude_over_sea_level_lib_bmp280)
+      print("Promedio de altitud sobre el nivel del mar con la libreria adafruit: ", altimeter.cum_altitude_over_sea_level_lib_adafruit)
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
       print("Calculo propio de altura sobre el nivel del mar: ", h_sea_level)
    else:
