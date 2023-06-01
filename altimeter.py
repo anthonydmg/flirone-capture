@@ -117,15 +117,16 @@ if __name__ == "__main__":
       print("Calculo propio de altura sobre el nivel del mar: ", h_sea_level)
    else:
       req_fields = [ "presion",
-                     "presion_over_floor", 
+                     "presion_over_floor",
+                     "temperature", 
                      "altitude_over_sea_level_lib_bmp280", 
                      "altitud_over_sea_level_lib_adafruit",
                      "altitud_over_sea_level_calculada", 
                      "calculate_abs_alture", 
                      "calculate_abs_alture_diff_lib_bmp280",
                      "calculate_abs_alture_diff_lib_adafruit"]
-
-      file_name = create_csv(name_base = "altimeter_", req_fields = req_fields)
+      delay = 0.5
+      file_name = create_csv(name_base = f"altimeter_{str(delay)}fps_", req_fields = req_fields)
       while True:
          P = altimeter.read_pressure()
          P0 = altimeter.P0
@@ -140,7 +141,8 @@ if __name__ == "__main__":
          
          data = {
             "presion":P ,
-            "presion_over_floor": P0, 
+            "presion_over_floor": P0,
+            "temperature": temperature, 
             "altitude_over_sea_level_lib_bmp280": h_sea_level_lib_bmp280,
             "altitud_over_sea_level_lib_adafruit": h_sea_level_lib_adafruit,
             "altitud_over_sea_level_calculada": h_sea_level_calculada,
@@ -151,7 +153,7 @@ if __name__ == "__main__":
          
          print("\nData:", data)
          register_in_csv(file_name, data, req_fields = req_fields)
-         time.sleep(0.8)
+         time.sleep(delay)
       #P = altimeter.read_pressure()
       #P0 = altimeter.P0
       #h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
