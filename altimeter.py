@@ -64,7 +64,7 @@ class Altimeter:
       with open("altimeter_params.json", "w") as f:
          json.dump({ "P0": self.P0, 
                      "altitude_over_sea_level_lib_bmp280": self.altitude_over_sea_level_lib_bmp280,
-                     "altitude_over_sea_level_lib_adafruit": altitude_over_sea_level_lib_adafruit
+                     "altitude_over_sea_level_lib_adafruit": self.altitude_over_sea_level_lib_adafruit
                      },f)
 
    def read_altitude_lib_bmp280(self):
