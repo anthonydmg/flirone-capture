@@ -140,15 +140,15 @@ if __name__ == "__main__":
          temperature = altimeter.read_temperature()
          
          data = {
-            "presion":P ,
-            "presion_over_floor": P0,
-            "temperature": temperature, 
-            "altitude_over_sea_level_lib_bmp280": h_sea_level_lib_bmp280,
-            "altitud_over_sea_level_lib_adafruit": h_sea_level_lib_adafruit,
-            "altitud_over_sea_level_calculada": h_sea_level_calculada,
-            "calculate_abs_alture": h_abs_calculate, 
-            "calculate_abs_alture_diff_lib_bmp280": h_abs_calculate_diff_lib_bm280,
-            "calculate_abs_alture_diff_lib_adafruit": h_abs_calculate_diff_lib_adafruit
+            "presion": round(P,5) ,
+            "presion_over_floor": round(P0,5),
+            "temperature": round(temperature,5), 
+            "altitude_over_sea_level_lib_bmp280": round(h_sea_level_lib_bmp280,5),
+            "altitud_over_sea_level_lib_adafruit": round(h_sea_level_lib_adafruit,5),
+            "altitud_over_sea_level_calculada": round(h_sea_level_calculada,5),
+            "calculate_abs_alture": round(h_abs_calculate,5), 
+            "calculate_abs_alture_diff_lib_bmp280": round(h_abs_calculate_diff_lib_bm280,5),
+            "calculate_abs_alture_diff_lib_adafruit": round(h_abs_calculate_diff_lib_adafruit,5)
          }
          
          print("\nData:", data)
