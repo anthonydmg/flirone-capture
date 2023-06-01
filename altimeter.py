@@ -31,7 +31,9 @@ class Altimeter:
                params = json.load(f)
                print(params)
                self.P0 = params["P0"]
-               self.altitude_over_sea_level = params["altitude_over_sea_level"]
+               self.altitude_over_sea_level_lib_adafruit = params.get("altitude_over_sea_level_lib_adafruit", 0)
+               self.altitude_over_sea_level_lib_bmp280 = params.get("altitude_over_sea_level_lib_bmp280", 0)
+               
 
          return True
 
@@ -42,27 +44,39 @@ class Altimeter:
    def inicialize_p0(self):
       print("Inicializando Presion de region base (P0)...")
       self.P0 = self.read_pressure()
-      num_reads = 20
+      num_reads = 10
       delay = 1 # retraso en segundos
       cum_P = 0
-      cum_altitude_over_sea_level = 0
+      cum_altitude_over_sea_level_lib_bmp280 = 0
+      cum_altitude_over_sea_level_lib_adafruit = 0
       for _ in range(num_reads):
          P = self.read_pressure()
          cum_P += P
-         cum_altitude_over_sea_level += self.read_altitude()
+         cum_altitude_over_sea_level_lib_bmp280 += self.read_altitude_lib_bmp280()
+         cum_altitude_over_sea_level_lib_adafruit += self.read_altitude_lib_bmp280()
          time.sleep(1.0)
       
       self.P0 = cum_P/ num_reads
-      self.altitude_over_sea_level = cum_altitude_over_sea_level / num_reads
+      self.altitude_over_sea_level_lib_bmp280 = cum_altitude_over_sea_level_lib_bmp280 / num_reads
+      self.altitude_over_sea_level_lib_adafruit = cum_altitude_over_sea_level_lib_adafruit / num_reads
+      
       print("Guardando P0 en alimeter_params.json")
       with open("altimeter_params.json", "w") as f:
-         json.dump({"P0": self.P0, "altitude_over_sea_level": self.altitude_over_sea_level},f)
+         json.dump({ "P0": self.P0, 
+                     "altitude_over_sea_level_lib_bmp280": self.altitude_over_sea_level_lib_bmp280,
+                     "altitude_over_sea_level_lib_adafruit": altitude_over_sea_level_lib_adafruit
+                     },f)
 
-   def read_altitude(self):
+   def read_altitude_lib_bmp280(self):
       return self.bmp280.get_altitude()
+
+   def read_altitude_lib_adafruit(self, P):
+      return 44330 * (1.0 - math.pow(P / PRESION_OVER_SEA_LEVEL, 0.1903))
 
    def read_pressure(self):
       return self.bmp280.get_pressure()
+   def read_temperature(self):
+      return self.get_temperature()
 
    def calculate_absolute_alture(self, P0, P):
       return 8453.669 * math.log(P0/P)
@@ -97,26 +111,41 @@ if __name__ == "__main__":
       P0 = altimeter.P0
       P =  altimeter.read_pressure()
       print("Presion en superficie base: ", P0)
+      print("Promedio de altitud sobre el nivel del mar con la libreria: ", altimeter.altitude_over_sea_level)
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
-      print("Altura sobre el nivel del mar calculada: ", h_sea_level)
-      print("Altitud sobre el nivel del mar libreria: ", altimeter.altitude_over_sea_level)
+      print("Calculo propio de altura sobre el nivel del mar: ", h_sea_level)
    else:
-      req_fields = ["presion","presion_over_floor", "alture_over_sea_level", "altitud_over_sea_level","actual_altitude", "diff_altutude", "abs_alture"]
+      req_fields = [ "presion",
+                     "presion_over_floor", 
+                     "altitude_over_sea_level_lib_bmp280", 
+                     "altitud_over_sea_level_lib_adafruit",
+                     "altitud_over_sea_level_calculada", 
+                     "calculate_abs_alture", 
+                     "calculate_abs_alture_diff_lib_bmp280",
+                     "calculate_abs_alture_diff_lib_adafruit"]
+
       file_name = create_csv(name_base = "altimeter_", req_fields = req_fields)
       while True:
          P = altimeter.read_pressure()
          P0 = altimeter.P0
-         h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
-         h = altimeter.calculate_absolute_alture(P0,P)
-         altitude = altimeter.read_altitude()
+         h_sea_level_calculada = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
+         h_sea_level_lib_bmp280 = altimeter.read_altitude_lib_bmp280()
+         h_sea_level_lib_adafruit = altimeter.read_altitude_lib_adafruit(P)
+         h_abs_calculate = altimeter.calculate_absolute_alture(P0,P)
+         h_abs_calculate_diff_lib_bm280 = h_sea_level_lib_bmp280 - altimeter.altitude_over_sea_level_lib_bmp280
+         h_abs_calculate_diff_lib_adafruit = h_sea_level_lib_adafruit - altimeter.altitude_over_sea_level_lib_adafruit
+         
+         temperature = altimeter.read_temperature()
+         
          data = {
             "presion":P ,
             "presion_over_floor": P0, 
-            "alture_over_sea_level": h_sea_level, 
-            "altitud_over_sea_level": altimeter.altitude_over_sea_level,
-            "actual_altitude": altitude, 
-            "abs_alture": h,
-            "diff_altutude": altitude - altimeter.altitude_over_sea_level
+            "altitude_over_sea_level_lib_bmp280": h_sea_level_lib_bmp280,
+            "altitud_over_sea_level_lib_adafruit": h_sea_level_lib_adafruit,
+            "altitud_over_sea_level_calculada": h_sea_level_calculada,
+            "calculate_abs_alture": h_abs_calculate, 
+            "calculate_abs_alture_diff_lib_bmp280": h_abs_calculate_diff_lib_bm280,
+            "calculate_abs_alture_diff_lib_adafruit": h_abs_calculate_diff_lib_adafruit
          }
          
          print("\nData:", data)
