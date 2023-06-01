@@ -53,7 +53,7 @@ class Altimeter:
          P = self.read_pressure()
          cum_P += P
          cum_altitude_over_sea_level_lib_bmp280 += self.read_altitude_lib_bmp280()
-         cum_altitude_over_sea_level_lib_adafruit += self.read_altitude_lib_bmp280()
+         cum_altitude_over_sea_level_lib_adafruit += self.read_altitude_lib_adafruit(P)
          time.sleep(1.0)
       
       self.P0 = cum_P/ num_reads
@@ -112,7 +112,7 @@ if __name__ == "__main__":
       P =  altimeter.read_pressure()
       print("Presion en superficie base: ", P0)
       print("Promedio de altitud sobre el nivel del mar con la libreria bmp280: ", altimeter.altitude_over_sea_level_lib_bmp280)
-      print("Promedio de altitud sobre el nivel del mar con la libreria adafruit: ", altimeter.cum_altitude_over_sea_level_lib_adafruit)
+      print("Promedio de altitud sobre el nivel del mar con la libreria adafruit: ", altimeter.altitude_over_sea_level_lib_adafruit)
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
       print("Calculo propio de altura sobre el nivel del mar: ", h_sea_level)
    else:
