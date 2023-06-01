@@ -76,7 +76,7 @@ class Altimeter:
    def read_pressure(self):
       return self.bmp280.get_pressure()
    def read_temperature(self):
-      return self.get_temperature()
+      return self.bmp280.get_temperature()
 
    def calculate_absolute_alture(self, P0, P):
       return 8453.669 * math.log(P0/P)
