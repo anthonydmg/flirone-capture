@@ -3,6 +3,10 @@ import serial
 from datetime import datetime
 from utils import create_csv, register_in_csv
 
+class ModuleError(Exception):
+    """
+    One of the error bits was set in the module
+    """
 class ModuleCommunication:
     """
     Simple class to communicate with the module software
