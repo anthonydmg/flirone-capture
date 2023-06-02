@@ -152,10 +152,10 @@ class ModuleDistanceDetector:
             # Set Mode read distance
             mode = 'distance'
             self.com.register_write(0x2, 0x200)
-            range_min = 2200
-            range_max = 2700
-            self.com.register_write(0x20, range_min)
-            self.com.register_write(0x21, range_max)
+            #range_min = 2200
+            #range_max = 2700
+            self.com.register_write(0x20, 2200)
+            self.com.register_write(0x21, 2700)
             # Update rate 1Hz
             self.com.register_write(0x23, 2000)
             self.com.register_write(0x24, 200)
