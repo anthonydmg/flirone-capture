@@ -7,6 +7,7 @@ class ModuleError(Exception):
     """
     One of the error bits was set in the module
     """
+    
 class ModuleCommunication:
     """
     Simple class to communicate with the module software
@@ -231,6 +232,7 @@ if __name__ == "__main__":
     name_file = create_csv(name_base = f"xm132_{str(delay)}fps_", req_fields = req_fields)
     
     if success_xm132:
+        distanceDetector.start()
         print("XM132 conectado exitosamente")
         while True:
             distances, amplitudes = distanceDetector.read_data()
