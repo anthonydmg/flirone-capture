@@ -220,7 +220,7 @@ class ModuleDistanceDetector:
 if __name__ == "__main__":
     distanceDetector = ModuleDistanceDetector()
      ## Connect Module Radar
-    success_xm132 = self.distanceDetector.connect()
+    success_xm132 = distanceDetector.connect()
     
     req_fields = ["distance","amplitude", "time"]
     delay = 0.5
