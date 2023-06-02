@@ -157,8 +157,8 @@ class ModuleDistanceDetector:
             self.com.register_write(0x20, range_min)
             self.com.register_write(0x21, range_max)
             # Update rate 1Hz
-            self.com.register_write(0x23, 1000)
-            self.com.register_write(0x24, 100)
+            self.com.register_write(0x23, 2000)
+            self.com.register_write(0x24, 200)
 
             # Disable UART streaming mode
             self.com.register_write(5, 0)
