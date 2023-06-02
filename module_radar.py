@@ -1,5 +1,7 @@
 import time
 import serial
+from datetime import datetime
+from utils import create_csv, register_in_csv
 
 class ModuleCommunication:
     """
@@ -145,8 +147,10 @@ class ModuleDistanceDetector:
             # Set Mode read distance
             mode = 'distance'
             self.com.register_write(0x2, 0x200)
-            self.com.register_write(0x20, 200)
-            self.com.register_write(0x21, 1000)
+            range_min = 2500
+            range_max = 3000
+            self.com.register_write(0x20, range_min)
+            self.com.register_write(0x21, range_max)
             # Update rate 1Hz
             self.com.register_write(0x23, 1000)
             self.com.register_write(0x24, 100)
@@ -186,19 +190,51 @@ class ModuleDistanceDetector:
         print('                                               ', end='\r')
         print(f'Detected {dist_count} peaks:', end='')
 
-        distances = self.read_peaks(dist_count)
+        distances, amplitudes = self.read_peaks(dist_count)
         num_dist = len(distances)
         mean_distance = 0
         if num_dist > 0:
             mean_distance = sum(distances) / num_dist
         return mean_distance
+    
+    def read_data(self):
+        self.com.register_write(3, 4)
+        # Wait for data read
+        self.com.wait_for_data(2)
+        dist_count = self.com.register_read(0xB0)
+        distances, amplitudes = self.read_peaks(dist_count)
+        return distances, amplitudes
 
     def read_peaks(self, dist_count):
         distances = []
+        amplitudes = []
         for count in range(dist_count):
             dist_distance = self.com.register_read(0xB1 + 2 * count)
             dist_amplitude = self.com.register_read(0xB2 + 2 * count)
             print(f' dist_{count}_distance={dist_distance / 1000} m', end='')
             print(f' dist_{count}_amplitude={dist_amplitude}', end='')
             distances.append(dist_distance / 1000)
-        return distances
+            amplitudes.append(dist_amplitude)
+        return distances, amplitudes
+
+if __name__ == "__main__":
+    distanceDetector = ModuleDistanceDetector()
+     ## Connect Module Radar
+    success_xm132 = self.distanceDetector.connect()
+    
+    req_fields = ["distance","amplitude", "time"]
+    delay = 0.5
+    name_file = create_csv(name_base = f"xm132_{str(delay)}fps_", req_fields = req_fields)
+    
+    if success_xm132:
+        print("XM132 conectado exitosamente")
+        while True:
+            distances, amplitudes = distanceDetector.read_data()
+            #print("Distancia: ", distance)
+            time = datetime.now()
+            for d, a in zip(distances, amplitudes):
+                data = {"distance": d, "amplitude": a, "time": time}
+                register_in_csv(name_file, data)
+            time.sleep(delay)
+    else:
+        print("XM132 no se puedo conectar")
