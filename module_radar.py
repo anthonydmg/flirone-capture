@@ -241,6 +241,7 @@ if __name__ == "__main__":
             time_now = datetime.now()
             for d, a in zip(distances, amplitudes):
                 data = {"distance": d, "amplitude": a, "time": time_now}
+                print("\ndata:", data)
                 register_in_csv(name_file, data, req_fields)
             time.sleep(delay)
             
