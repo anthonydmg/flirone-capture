@@ -59,12 +59,14 @@ class Altimeter:
       self.P0 = cum_P/ num_reads
       self.altitude_over_sea_level_lib_bmp280 = cum_altitude_over_sea_level_lib_bmp280 / num_reads
       self.altitude_over_sea_level_lib_adafruit = cum_altitude_over_sea_level_lib_adafruit / num_reads
-      
+      time_now = time_now = datetime.now()
+
       print("Guardando P0 en alimeter_params.json")
       with open("altimeter_params.json", "w") as f:
          json.dump({ "P0": self.P0, 
                      "altitude_over_sea_level_lib_bmp280": self.altitude_over_sea_level_lib_bmp280,
-                     "altitude_over_sea_level_lib_adafruit": self.altitude_over_sea_level_lib_adafruit
+                     "altitude_over_sea_level_lib_adafruit": self.altitude_over_sea_level_lib_adafruit,
+                     "time": time_now
                      },f)
 
    def read_altitude_lib_bmp280(self):
@@ -124,7 +126,8 @@ if __name__ == "__main__":
                      "altitud_over_sea_level_calculada", 
                      "calculate_abs_alture", 
                      "calculate_abs_alture_diff_lib_bmp280",
-                     "calculate_abs_alture_diff_lib_adafruit"]
+                     "calculate_abs_alture_diff_lib_adafruit",
+                     "time"]
       delay = 0.5
       file_name = create_csv(name_base = f"altimeter_{str(delay)}fps_", req_fields = req_fields)
       while True:
@@ -138,7 +141,7 @@ if __name__ == "__main__":
          h_abs_calculate_diff_lib_adafruit = h_sea_level_lib_adafruit - altimeter.altitude_over_sea_level_lib_adafruit
          
          temperature = altimeter.read_temperature()
-         
+         time_now = datetime.now()
          data = {
             "presion": round(P,5) ,
             "presion_over_floor": round(P0,5),
@@ -148,7 +151,8 @@ if __name__ == "__main__":
             "altitud_over_sea_level_calculada": round(h_sea_level_calculada,5),
             "calculate_abs_alture": round(h_abs_calculate,5), 
             "calculate_abs_alture_diff_lib_bmp280": round(h_abs_calculate_diff_lib_bm280,5),
-            "calculate_abs_alture_diff_lib_adafruit": round(h_abs_calculate_diff_lib_adafruit,5)
+            "calculate_abs_alture_diff_lib_adafruit": round(h_abs_calculate_diff_lib_adafruit,5),
+            "time": time_now
          }
          
          print("\nData:", data)
