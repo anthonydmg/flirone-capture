@@ -238,10 +238,11 @@ if __name__ == "__main__":
         while True:
             distances, amplitudes = distanceDetector.read_data()
             #print("Distancia: ", distance)
-            time = datetime.now()
+            time_now = datetime.now()
             for d, a in zip(distances, amplitudes):
-                data = {"distance": d, "amplitude": a, "time": time}
+                data = {"distance": d, "amplitude": a, "time": time_now}
                 register_in_csv(name_file, data)
             time.sleep(delay)
+            
     else:
         print("XM132 no se puedo conectar")
