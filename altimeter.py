@@ -70,7 +70,7 @@ class Altimeter:
                      },f)
 
    def read_altitude_lib_bmp280(self, manual_temperature = None):
-      return self.bmp280.get_altitude(manual_temperature)
+      return self.bmp280.get_altitude()
 
    def read_altitude_lib_adafruit(self, P):
       return 44330 * (1.0 - math.pow(P / PRESION_OVER_SEA_LEVEL, 0.1903))
