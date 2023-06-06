@@ -165,7 +165,7 @@ class System:
                             "longitud", 
                             "distance_xm132"]
 
-        self.file_name = create_csv(req_fields = req_fields)
+        self.file_name = create_csv(req_fields = self.req_fields)
         #frame_rate_save = 10
         prev_time = 0
         prev_time_save = 0 
