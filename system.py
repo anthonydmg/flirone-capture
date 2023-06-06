@@ -154,7 +154,7 @@ class System:
                             "altitud_over_sea_level_lib_bmp280",
                             "altitude_over_sea_level_lib_adafruit",
                             "alture",
-                            "alture_lib_adafruit".
+                            "alture_lib_adafruit",
                             "alture_lib_bm280",
                             "time", 
                             "visible_image", 
