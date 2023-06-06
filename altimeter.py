@@ -71,8 +71,11 @@ class Altimeter:
                      },f)
 
    def read_altitude_lib_bmp280(self, manual_temperature = None):
-      return self.bmp280.get_altitude()
-
+      if manual_temperature is None:
+         return self.bmp280.get_altitude()
+      else:
+         return self.bmp280.get_altitude(manual_temperature = manual_temperature)
+         
    def read_altitude_lib_adafruit(self, P):
       return 44330 * (1.0 - math.pow(P / PRESION_OVER_SEA_LEVEL, 0.1903))
 
@@ -135,6 +138,8 @@ if __name__ == "__main__":
       file_name = create_csv(name_base = f"altimeter_{str(delay)}fps_", req_fields = req_fields)
       while True:
          P = altimeter.read_pressure()
+         temperature = altimeter.read_temperature()
+         
          P0 = altimeter.P0
          h_sea_level_calculada = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL,P)
          h_sea_level_lib_bmp280 = altimeter.read_altitude_lib_bmp280()
@@ -143,7 +148,6 @@ if __name__ == "__main__":
          h_abs_calculate_diff_lib_bm280 = h_sea_level_lib_bmp280 - altimeter.altitude_over_sea_level_lib_bmp280
          h_abs_calculate_diff_lib_adafruit = h_sea_level_lib_adafruit - altimeter.altitude_over_sea_level_lib_adafruit
          
-         temperature = altimeter.read_temperature()
          time_now = datetime.now()
          data = {
             "presion": round(P,5) ,
