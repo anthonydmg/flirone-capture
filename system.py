@@ -210,7 +210,7 @@ class System:
                 current_data["thermal_image"] = f"images/{thermal_image_name}.tiff"
                 #prev_time_save = time.time()
 
-                register_in_csv(self.file_name, current_data, req_fields = req_fields)
+                register_in_csv(self.file_name, current_data, req_fields = self.req_fields)
             #stop_read_radar = True
                     #break
             
