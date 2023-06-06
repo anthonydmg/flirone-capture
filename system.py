@@ -38,7 +38,9 @@ CURRENT_ALTIMETER_DATA = {
          "presion": 0,  
          "alture": 0, 
          "alture_over_sea_level": 0,
-         "environment_temperature": 0 
+         "environment_temperature": 0,
+         "alture_lib_adafruit": 0,
+         "alture_lib_bm280": 0 
         }
 
 
