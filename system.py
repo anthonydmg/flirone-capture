@@ -34,18 +34,12 @@ vfov = 50
 CURRENT_ALTURE = INIT_FLIGHT_HEIGHT
 CURRENT_LOCATION = {"latitude": "", "longitude": ""}
 
-data = { "presion": 0,  
+CURRENT_ALTIMETER_DATA = { 
+         "presion": 0,  
          "alture": 0, 
-         "alture_over_sea_level": 0, 
-         "time": datetime.now(), 
-         "visible_image": "", 
-         "thermal_image":"" , 
-         "max_temperature": None, 
-         "area_fire": 0,
-         "latitud": "",
-         "longitud": "",
-         "distance_xm132": 0
-         }
+         "alture_over_sea_level": 0,
+         "environment_temperature": 0 
+        }
 
 
 def read_location(stop_read, gps_reciever):
@@ -61,17 +55,26 @@ def read_location(stop_read, gps_reciever):
             break
 
 def read_alture(stop_read, altimeter):
-    global CURRENT_ALTURE
-    streaming_moving_average = StreamingMovingAverage(5)
+    #global CURRENT_ALTURE
+    #streaming_moving_average = StreamingMovingAverage(5)
     while True:
-        #print("Thread runing Location")
         P = altimeter.read_pressure()
-        mv_avg_P = streaming_moving_average.process(P)
-        CURRENT_ALTURE = altimeter.calculate_absolute_alture(altimeter.P0, mv_avg_P)
-        data["presion"] = mv_avg_P
-        data["alture"] = CURRENT_ALTURE
-        data["alture_over_sea_level"] =  altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, mv_avg_P)
-        #print("CURRENT ALTURE: \n", CURRENT_ALTURE)
+        temperature = altimeter.read_temperature()
+        altitud_lib_bmp280 = altimeter.read_altitude_lib_bmp280(manual_temperature = temperature)
+        altitud_lib_adafruit = altimeter.read_altitude_lib_adafruit(P)
+        
+        abs_h_lib_adafruit = altitud_lib_adafruit - altimeter.altitude_over_sea_level_lib_adafruit
+        abs_h_lib_bm280 = altitud_lib_bmp280 - altimeter.altitude_over_sea_level_lib_bmp280
+        
+        CURRENT_ALTIMETER_DATA["presion"] = P
+        CURRENT_ALTIMETER_DATA["environment_temperature"] = temperature
+        CURRENT_ALTIMETER_DATA["alture"] = abs_h_lib_adafruit
+        CURRENT_ALTIMETER_DATA["altitud_over_sea_level"] =  altimeter.altitude_over_sea_level_lib_adafruit
+        CURRENT_ALTIMETER_DATA["altitud_over_sea_level_lib_bmp280"] = altimeter.altitude_over_sea_level_lib_bmp280
+        CURRENT_ALTIMETER_DATA["altitude_over_sea_level_lib_adafruit"] = altimeter.altitude_over_sea_level_lib_adafruit
+        CURRENT_ALTIMETER_DATA["alture_lib_adafruit"] = abs_h_lib_adafruit
+        CURRENT_ALTIMETER_DATA["alture_lib_bm280"] = abs_h_lib_bm280
+
         time.sleep(0.5)
         if stop_read():
             break
@@ -133,8 +136,8 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 5.0:
-            frame_rate = 5.0
+        if frame_rate > 1.0:
+            frame_rate = 1.0
         print(".........Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -143,8 +146,25 @@ class System:
         if self.gps_reciever.connected:
             self.start_read_location()
 
-        self.file_name = create_csv()
-        frame_rate_save = 10
+        self.req_fields = [ "presion",
+                            "environment_temperature",  
+                            "altitud_over_sea_level",
+                            "altitud_over_sea_level_lib_bmp280",
+                            "altitude_over_sea_level_lib_adafruit",
+                            "alture",
+                            "alture_lib_adafruit".
+                            "alture_lib_adafruit"
+                            "time", 
+                            "visible_image", 
+                            "thermal_image", 
+                            "max_temperature", 
+                            "area_fire", 
+                            "latitud", 
+                            "longitud", 
+                            "distance_xm132"]
+
+        self.file_name = create_csv(req_fields = req_fields)
+        #frame_rate_save = 10
         prev_time = 0
         prev_time_save = 0 
         
@@ -161,7 +181,7 @@ class System:
             if (time_elapsed > (1 / frame_rate)):
                 print("\n\nFrame Rate:", frame_rate)
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
-                current_data = data.copy() 
+                current_data = CURRENT_ALTIMETER_DATA.copy() 
 
                 current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 2.0
 
@@ -170,6 +190,7 @@ class System:
                 fireDetectionData = fireDetectionOuput.fireDetectionData
                 fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                 fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
+
                 if fire_prob > 0.2:
                     self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
@@ -187,7 +208,7 @@ class System:
                 current_data["thermal_image"] = f"images/{thermal_image_name}.tiff"
                 #prev_time_save = time.time()
 
-                register_in_csv(self.file_name, current_data)
+                register_in_csv(self.file_name, current_data, req_fields = req_fields)
             #stop_read_radar = True
                     #break
             

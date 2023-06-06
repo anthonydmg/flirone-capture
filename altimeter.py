@@ -69,14 +69,15 @@ class Altimeter:
                      "time": time_now
                      },f)
 
-   def read_altitude_lib_bmp280(self):
-      return self.bmp280.get_altitude()
+   def read_altitude_lib_bmp280(self, manual_temperature = None):
+      return self.bmp280.get_altitude(manual_temperature)
 
    def read_altitude_lib_adafruit(self, P):
       return 44330 * (1.0 - math.pow(P / PRESION_OVER_SEA_LEVEL, 0.1903))
 
    def read_pressure(self):
       return self.bmp280.get_pressure()
+      
    def read_temperature(self):
       return self.bmp280.get_temperature()
 
@@ -108,6 +109,7 @@ if __name__ == "__main__":
    init = True if config["init"] == "True" else False
    altimeter = Altimeter()
    altimeter.connect()
+
    if init == True:
       altimeter.inicialize_p0()
       P0 = altimeter.P0
