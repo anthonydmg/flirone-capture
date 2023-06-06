@@ -67,7 +67,7 @@ class Altimeter:
          json.dump({ "P0": self.P0, 
                      "altitude_over_sea_level_lib_bmp280": self.altitude_over_sea_level_lib_bmp280,
                      "altitude_over_sea_level_lib_adafruit": self.altitude_over_sea_level_lib_adafruit,
-                     "time": time_now
+                     "time": time_now.strftime("%m/%d/%Y, %H:%M:%S")
                      },f)
 
    def read_altitude_lib_bmp280(self, manual_temperature = None):
