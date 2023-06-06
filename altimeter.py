@@ -75,7 +75,7 @@ class Altimeter:
          return self.bmp280.get_altitude()
       else:
          return self.bmp280.get_altitude(manual_temperature = manual_temperature)
-         
+
    def read_altitude_lib_adafruit(self, P):
       return 44330 * (1.0 - math.pow(P / PRESION_OVER_SEA_LEVEL, 0.1903))
 
@@ -159,7 +159,7 @@ if __name__ == "__main__":
             "calculate_abs_alture": round(h_abs_calculate,5), 
             "calculate_abs_alture_diff_lib_bmp280": round(h_abs_calculate_diff_lib_bm280,5),
             "calculate_abs_alture_diff_lib_adafruit": round(h_abs_calculate_diff_lib_adafruit,5),
-            "time": time_now
+            "time": time_now.strftime("%m/%d/%Y, %H:%M:%S")
          }
          
          print("\nData:", data)
