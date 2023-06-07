@@ -81,7 +81,7 @@ def read_alture(stop_read, altimeter):
         if stop_read():
             break
 
-def read_distance(stop_read):
+def read_distance(stop_read, distanceDetector):
     while True:
         print("Thread runing")
         distance = distanceDetector.read()
@@ -140,7 +140,7 @@ class System:
         
         if frame_rate > 1.0:
             frame_rate = 1.0
-        print(".........Frame Rate:...............................", frame_rate)
+        print("...................Frame Rate:...............................", frame_rate)
         ## gps location
 
         self.gps_reciever.get_current_location()
@@ -149,6 +149,7 @@ class System:
             self.start_read_location()
 
         self.req_fields = [ "presion",
+                            "fire_prob",
                             "environment_temperature",  
                             "altitud_over_sea_level",
                             "altitud_over_sea_level_lib_bmp280",
@@ -168,17 +169,16 @@ class System:
         self.file_name = create_csv(req_fields = self.req_fields)
         #frame_rate_save = 10
         prev_time = 0
-        prev_time_save = 0 
+        #prev_time_save = 0 
         
         while True:
             thermal_frame = self.flirone_capture.get_thermal_frame()
 
             ## Fire detection
-           # prevTime = 0
+            # prevTime = 0
             time_elapsed = time.time() - prev_time
-            
             #prevTimeSave = 0
-            time_elapsed_save = time.time() - prev_time_save
+            #time_elapsed_save = time.time() - prev_time_save
 
             if (time_elapsed > (1 / frame_rate)):
                 print("\n\nFrame Rate:", frame_rate)
@@ -197,6 +197,7 @@ class System:
                     self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
                 prev_time =  time.time()
+                current_data["fire_prob"] = fire_prob
                 current_data["time"] = datetime.now()
                 current_data["max_temperature"] =  fireDetectionData.max_temperature
                 current_data["area_fire"] =  fireDetectionData.max_areaM2
