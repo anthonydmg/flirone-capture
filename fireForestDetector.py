@@ -42,20 +42,32 @@ class FireDetectionOuput:
 class FireForestDetector:
     def __init__(self):
           self.fuzzy_system = FuzzySystem()
+    
     def find_hot_regions(self, Matrix_Temperatures, threshold_temperature):
-        mask_array = Matrix_Temperatures > threshold_temperature
-        mask_array = mask_array * 255.0
-        mask_array = mask_array.astype(np.uint8)
-        contours, hierarchy = cv2.findContours(mask_array, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        mask_image = Matrix_Temperatures > threshold_temperature
+        mask_image = mask_image * 255.0
+        mask_image = mask_image.astype(np.uint8)
+        contours, hierarchy = cv2.findContours(mask_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         return contours
+
+    def calculate_num_pixels(self, contours, i_cont):
+        im_cont_i = np.zeros((80,60))
+        #areaPixels = cv2.contourArea(cnt)
+        #areaPixels = cv2.contourArea(contours[i_cont])
+        cv2.drawContours(im_cont_i, contours,  i_cont, (255, 255, 255), cv2.FILLED)
+
+        im_hot_spot = im_cont_i != 0.0
+        num_pixels = np.sum((im_hot_spot * 1.0))
+        return num_pixels
 
     def calculate_largest_area(self, hot_regions_contours, fligth_height):
         #areas = []
         max_areaM2 = 0
-        for cnt in hot_regions_contours:
-            areaPixels = cv2.contourArea(cnt)
+        for i ,cnt in enumerate(hot_regions_contours):
+            #areaPixels = cv2.contourArea(cnt)
+            num_pixels = self.calculate_num_pixels(cnt, i)
             #print("AreaPixeles:", areaPixels)
-            areaM2 = self.convertAreaMeters(areaPixels, fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH)
+            areaM2 = self.convertAreaMeters(num_pixels, fligth_height, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH)
             if areaM2 > max_areaM2:
                 max_areaM2 = areaM2
             #print("areaM2:", areaM2)
