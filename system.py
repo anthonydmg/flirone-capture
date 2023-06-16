@@ -1,4 +1,4 @@
-import ctypes
+import argparse
 from ctypes import *
 import numpy as np
 import cv2
@@ -13,7 +13,6 @@ from module_radar import ModuleDistanceDetector
 from gps_reciver import GPS_RECEIVER
 import threading
 from fireForestDetector import FireForestDetector, FireDetecionData, FireDetectionOuput
-from utils import StreamingMovingAverage
 from altimeter import Altimeter, PRESION_OVER_SEA_LEVEL
 from utils import create_csv, register_in_csv
 
@@ -94,7 +93,14 @@ def read_distance(stop_read, distanceDetector):
             break
 
 class System:
-    def __init__(self, frame_rate = FRAME_RATE, fligth_height = INIT_FLIGHT_HEIGHT , fligh_speed = INIT_FLIGHT_SPEED, show_frames = False, overlap = 0.75):
+    def __init__(self,
+        save_images = False, 
+        frame_rate = FRAME_RATE, 
+        fligth_height = INIT_FLIGHT_HEIGHT , 
+        fligh_speed = INIT_FLIGHT_SPEED, 
+        show_frames = False, 
+        overlap = 0.75):
+
         self.flirone_capture = FlirOneCapture()
         self.sio = socketio.Client()
         self.distanceDetector = ModuleDistanceDetector()
@@ -106,6 +112,7 @@ class System:
         self.overlap = overlap
         self.gps_reciever = GPS_RECEIVER()
         self.altimeter = Altimeter()
+        self.save_images = save_images
 
     def run(self):
         ## Connect Flir one
@@ -273,9 +280,17 @@ class System:
         dv =  self.calculateLongitudeVFov(altura)
         return  (flightSpeed  * 18/5) / ((1 - self.overlap) * dv)
 
-def main():
-    system = System(show_frames=True)
+def main(show_frames = False, save_images = False):
+    system = System(show_frames=show_frames, save_images = save_images)
     system.run()
 
 if __name__  == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description = "altimeter BMP280",
+                        formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-d", "--display", default = False)
+    parser.add_argument("-s", "--save", default = False)
+    args = parser.parse_args()
+
+    config = vars(args)
+    print(config)
+    main(show_frames = config["display"],  save_images = config["save"])
