@@ -224,10 +224,10 @@ class System:
                 cv2.resizeWindow("Thermal Image", 640, 480)
                 cv2.imshow("Thermal Image", tframe_image)
 		
-                vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
+                #vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
                 cv2.namedWindow("VisibleImage", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("VisibleImage", 640, 480)
-                cv2.imshow("VisibleImage", vframe_image_disp)
+                cv2.imshow("VisibleImage", vframe_image)
                 cv2.waitKey(20)
             
             thermal_frame.clear()

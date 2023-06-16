@@ -309,7 +309,7 @@ void ThermalFrame::reset(){
 }
 
 void ThermalFrame::set_pallete(char * palname){
-    this->palette_colormap = rainbow;
+    this->palette_colormap = palette_Grayscale;
 }
 
 void ThermalFrame::calcule_tframe_gray16(){
@@ -540,9 +540,13 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
                 pos = 2 * ( y * (THERMAL_IMAGE_WIDTH + 2) + x) + 32;
                 //printf("data[%d] = %d\n", pos,buffer_data[pos]);
                 value =  tframe_data[pos] | tframe_data[pos + 1] << 8;
-                //printf("value = %d, min_val = %d, max_val = %d\n", value, min_val, max_val); 
+                printf("value = %d, min_val = %d, max_val = %d\n", value, minval_gray, maxval_gray); 
                 gray16frame[y* THERMAL_IMAGE_WIDTH + x] = value;
-                
+
+                if(y == 0 && x == 0){
+                    minval_gray = value;
+                }
+
                 if( value < minval_gray){
                     minval_gray = value;       
                 }
@@ -552,12 +556,15 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
                 }
             }
         }
+
+        printf("minval_gray: %d\n", minval_gray);
+        printf("maxval_gray: %d\n", maxval_gray);
     }
    void read_thermal_frame_color(uint16_t gray16frame [4800], uint8_t  tframe_color[80 * 60 * 3], uint32_t  &minval_gray, uint32_t  &maxval_gray ){
         uint16_t scale;
         uint16_t delta;
         uint8_t val_pix;
-        //printf("\nmin_val = %d, max_val = %d\n", min_val, max_val); 
+        printf("\nminval_gray = %d, maxval_gray = %d\n", minval_gray, maxval_gray); 
         //printf("\nd=%d\n", min_val, max_val); 
         delta = maxval_gray - minval_gray;
         printf("Delta: %d\n", delta);
@@ -565,14 +572,18 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
             delta = 1;
 
         scale = 0x10000 / delta;
-        
-        printf("Thermal Image\n");
+        //scale = 255 / delta;
+        printf("scale = %d\n", scale);
         
         for(int y = 0; y < THERMAL_IMAGE_HEIGHT; y++){
         
             for(int x = 0; x< THERMAL_IMAGE_WIDTH; x++){
                 
-                val_pix = ((gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
+                //val_pix = ((gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
+                val_pix = (float(gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) / delta) * 255;
+                //val_pix = (gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale;
+                //printf("val_pix: %d\n", val_pix);
+
                 for(int c = 0 ; c < 3 ; c++){
                     //tframe_color[c *THERMAL_IMAGE_WIDTH * THERMAL_IMAGE_HEIGHT  +  y * THERMAL_IMAGE_WIDTH + x] = rainbow[3 * val_pix + c];
                     tframe_color[3 *y  +  x * THERMAL_IMAGE_HEIGHT * 3 + c] = rainbow[3 * val_pix + c];
