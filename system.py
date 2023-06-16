@@ -145,8 +145,8 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 1.0:
-            frame_rate = 1.0
+        if frame_rate > 0.5:
+            frame_rate = 0.5
         print("...................Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -212,13 +212,13 @@ class System:
                 current_data["longitud"] = fireDetectionData.longitud
 
             #if (time_elapsed_save > (1 / frame_rate_save)):
-                print("\n\n...........................Guardando Imagenes.............................................................................\n")
-                #visible_image_name, thermal_image_name = thermal_frame.save_images()
-                #current_data["visible_image"] = f"images/{visible_image_name}.jpg"
-                #current_data["thermal_image"] = f"images/{thermal_image_name}.tiff"
+                if self.save_images:
+                    print("\n\n...........................Guardando Imagenes.............................................................................\n")
+                    visible_image_name, thermal_image_name = thermal_frame.save_images()
+                    current_data["visible_image"] = f"images/{visible_image_name}.jpg"
+                    current_data["thermal_image"] = f"images/{thermal_image_name}.tiff"
                 #prev_time_save = time.time()
-
-                #register_in_csv(self.file_name, current_data, req_fields = self.req_fields)
+                    register_in_csv(self.file_name, current_data, req_fields = self.req_fields)
             #stop_read_radar = True
                     #break
             
@@ -226,15 +226,15 @@ class System:
                 tframe_image = thermal_frame.getThermalFrameRGB()
             
                 vframe_image = thermal_frame.getVisibleFrameRGB()
-                #tframe_image_disp = cv2.cvtColor(tframe_image, cv2.COLOR_RGB2BGR)
+                tframe_image_disp = cv2.cvtColor(tframe_image, cv2.COLOR_RGB2BGR)
                 cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("Thermal Image", 640, 480)
-                cv2.imshow("Thermal Image", tframe_image)
+                cv2.imshow("Thermal Image", tframe_image_disp)
 		
-                #vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
+                vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
                 cv2.namedWindow("VisibleImage", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("VisibleImage", 640, 480)
-                cv2.imshow("VisibleImage", vframe_image)
+                cv2.imshow("VisibleImage", vframe_image_disp)
                 cv2.waitKey(20)
             
             thermal_frame.clear()
