@@ -128,3 +128,16 @@ class FuzzySystem:
     def fuzzy_system_inference(self, maxTemperature, areaFire):
         rule_verde, rule_naranja , rule_rojo = self.fuzzy_inference(maxTemperature, areaFire)
         return self.defuzzification(rule_verde, rule_naranja , rule_rojo)
+
+if __name__ == "__main__":
+    maxTemperature = 182.244
+    area_region_m2 = 0.124
+    fuzzySystem = FuzzySystem()
+    rule_verde, rule_naranja , rule_rojo = fuzzySystem.fuzzy_inference(maxTemperature, area_region_m2)
+    print("rule_verde:", rule_verde)
+    print("rule_naranja:", rule_naranja)
+    print("rule_rojo:", rule_rojo)
+    output = fuzzySystem.defuzzification(rule_verde, rule_naranja , rule_rojo)
+    print("output.alert_prob: ",output.alert_prob)
+    ## Ecuaciones.
+    

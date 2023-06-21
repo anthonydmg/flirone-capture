@@ -473,8 +473,8 @@ bool t_frame_iscomplete(uint32_t pyload_size, uint32_t pointer){
 
 bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_data, uint32_t  &jpg_size,  uint32_t  &thermal_size,  uint32_t  &pyload_size ){
         //printf("Inicia lectura\n");
-        uint8_t buffer[BUF85SIZE];
-        uint32_t size = (u_int32_t) sizeof(buffer);
+        //uint8_t buffer[BUF85SIZE];
+        uint32_t size = BUF85SIZE * sizeof(uint32_t);
         int mb_idx;
         uint32_t pointer  = 0;
         thermal_size = 0;
@@ -511,6 +511,7 @@ bool read_thermal_frame(libusb_device_handle * device_handle, uint8_t* tframe_da
                     }
 
                     found_header = true;
+                    length_stream = length_stream - mb_idx;
                 }
             } 
             
@@ -579,8 +580,8 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
         
             for(int x = 0; x< THERMAL_IMAGE_WIDTH; x++){
                 
-                //val_pix = ((gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
-                val_pix = (float(gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) / delta) * 255;
+                val_pix = ((gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
+                //val_pix = (float(gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) / delta) * 255;
                 //val_pix = (gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale;
                 //printf("val_pix: %d\n", val_pix);
 
