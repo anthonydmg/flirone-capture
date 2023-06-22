@@ -541,7 +541,6 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
                 pos = 2 * ( y * (THERMAL_IMAGE_WIDTH + 2) + x) + 32;
                 //printf("data[%d] = %d\n", pos,buffer_data[pos]);
                 value =  tframe_data[pos] | tframe_data[pos + 1] << 8;
-                printf("value = %d, min_val = %d, max_val = %d\n", value, minval_gray, maxval_gray); 
                 gray16frame[y* THERMAL_IMAGE_WIDTH + x] = value;
 
                 if(y == 0 && x == 0){
@@ -673,10 +672,6 @@ void load_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){
 	uint32_t stripsize;
     
     TIFFGetField(tif, TIFFTAG_STRIPBYTECOUNTS, &bc);
-    printf("TIFFNumberOfStrips: %d\n", TIFFNumberOfStrips(tif));
-    printf("StripSize = %d\n",bc[0]);
-    printf("StripSize = %d\n",bc[1]);
-    printf("StripSize = %d\n",bc[2]);
     stripsize = 0;
     for (strip = 0; strip < TIFFNumberOfStrips(tif); strip++) {
 		TIFFReadRawStrip(tif, strip, image_gray16 + stripsize / 2, -1);
@@ -791,7 +786,7 @@ bool save_flir_images_prev(char * path, uint16_t * imageGray16, uint32_t thermal
 bool save_flir_images(char * path, char * visible_image_name, char * thermal_image_name, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
     long long ms = current_timestamp();
     char path_thermal_image[100];
-    sprintf(path_thermal_image, "%s/%s.tiff", path, thermal_image_name);
+    sprintf(path_thermal_image, "%s/%s.tif", path, thermal_image_name);
 
     char path_visible_image[100];
     sprintf(path_visible_image, "%s/%s.jpg", path, visible_image_name);
