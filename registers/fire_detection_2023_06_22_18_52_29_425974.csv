@@ -1,0 +1,9 @@
+presion,fire_prob,environment_temperature,altitud_over_sea_level,altitud_over_sea_level_lib_bmp280,altitude_over_sea_level_lib_adafruit,alture,alture_lib_adafruit,alture_lib_bm280,time,visible_image,thermal_image,max_temperature,area_fire,latitud,longitud,distance_xm132
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:29.512121,images/b'flir_visible_image_2023_06_22_18_52_29_513303'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_29_513303'.tiff,49.55865,0.0671914673992646,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:29.833197,images/b'flir_visible_image_2023_06_22_18_52_29_834151'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_29_834151'.tiff,49.834038,0.06759868841380559,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:30.098705,images/b'flir_visible_image_2023_06_22_18_52_30_099768'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_30_099768'.tiff,49.69642,0.0671914673992646,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:30.371646,images/b'flir_visible_image_2023_06_22_18_52_30_372661'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_30_372661'.tiff,49.816845,0.06882035145742858,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:30.646000,images/b'flir_visible_image_2023_06_22_18_52_30_647512'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_30_647512'.tiff,49.748043,0.06790410417471135,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:30.909172,images/b'flir_visible_image_2023_06_22_18_52_30_909975'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_30_909975'.tiff,49.86842,0.0690239619646991,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:31.184424,images/b'flir_visible_image_2023_06_22_18_52_31_185593'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_31_185593'.tiff,49.54142,0.0665806358774531,,,
+0,0.2,0,0,,,0,0,0,2023-06-22 18:52:31.448816,images/b'flir_visible_image_2023_06_22_18_52_31_450368'.jpg,images/b'flir_thermal_16gray_2023_06_22_18_52_31_450368'.tiff,49.885605,0.06759868841380559,,,

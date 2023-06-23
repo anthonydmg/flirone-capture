@@ -16,6 +16,10 @@ from fireForestDetector import FireForestDetector, FireDetecionData, FireDetecti
 from altimeter import Altimeter, PRESION_OVER_SEA_LEVEL
 from utils import create_csv, register_in_csv
 
+# importing the library
+from memory_profiler import profile
+ 
+
 FRAME_RATE = 1
 
 THERMAL_IMAGE_HEIGTH = 80
@@ -113,7 +117,7 @@ class System:
         self.gps_reciever = GPS_RECEIVER()
         self.altimeter = Altimeter()
         self.save_images = save_images
-
+    @profile
     def run(self):
         ## Connect Flir one
         opened = self.flirone_capture.open_device()
@@ -145,8 +149,8 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 0.5:
-            frame_rate = 0.5
+        ##if frame_rate > 2.0:
+        frame_rate = 4.0
         print("...................Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -178,7 +182,8 @@ class System:
         prev_time = 0
         #prev_time_save = 0 
         
-        while True:
+        #while True:
+        for _ in range(1000):
             thermal_frame = self.flirone_capture.get_thermal_frame()
 
             ## Fire detection
@@ -233,15 +238,18 @@ class System:
                 cv2.resizeWindow("Thermal Image", 640, 480)
                 cv2.imshow("Thermal Image", tframe_image_disp)
 		
-                #vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
+                ##vframe_image_disp = cv2.cvtColor(vframe_image, cv2.COLOR_RGB2BGR)
                 cv2.namedWindow("VisibleImage", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("VisibleImage", 640, 480)
                 cv2.imshow("VisibleImage", vframe_image)
                 cv2.waitKey(20)
+                #del vframe_image
+                gc.collect()
             
             thermal_frame.clear()
             del thermal_frame
             gc.collect()
+        
 
     def start_read_distance(self):
         self.distanceDetector.start()
@@ -281,6 +289,8 @@ class System:
     def calculateFps(self, altura, flightSpeed):
         dv =  self.calculateLongitudeVFov(altura)
         return  (flightSpeed  * 18/5) / ((1 - self.overlap) * dv)
+    
+# instantiating the decorator
 
 def main(show_frames = False, save_images = False):
     system = System(show_frames=show_frames, save_images = save_images)
@@ -295,4 +305,5 @@ if __name__  == "__main__":
 
     config = vars(args)
     print(config)
+
     main(show_frames = config["display"],  save_images = config["save"])
