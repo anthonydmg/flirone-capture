@@ -821,6 +821,7 @@ bool read_visible_frame_color( uint8_t tframe_data[350000], uint8_t frame_color[
                 }
             }
         }
+    free(bmp_buffer);
     return true;
 }
 
