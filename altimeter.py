@@ -128,9 +128,10 @@ if __name__ == "__main__":
       time.sleep(0.1)
       if h_abs_calculate_diff_lib_adafruit < 1 and  h_abs_calculate_diff_lib_adafruit > -1:
          print("El punto de referencia se inicializo correctamente")
+         print("Altura:", h_abs_calculate_diff_lib_adafruit)
       else:
          print("El punto de referencia no se inicializo correctamente pruebe de nuevo")
-         print("H:", h_abs_calculate_diff_lib_adafruit)
+         print("Altura:", h_abs_calculate_diff_lib_adafruit)
 
    else:
       req_fields = [ "presion",
