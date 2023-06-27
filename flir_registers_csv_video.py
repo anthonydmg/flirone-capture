@@ -33,7 +33,7 @@ thershold_temperature = 100
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
 
-path_csv = "./registers/fire_detection_2023_06_16_14_54_42_653611.csv"
+path_csv = "./registers/fire_detection_2023_06_26_17_09_55_629175.csv"
 path_images = "./images"
 
 df = pd.read_csv(path_csv)
@@ -49,9 +49,8 @@ temperatures = (ctypes.c_double * 4800)()
 #    f"{path_images}/flir_visible_image_2023_06_09_08_04_01_997171.jpg"]]
 
 for index ,row in df.iterrows():
-    visible_image_path = str(row["visible_image"].split("/")[-1][:-4])[2:-1]
-    visible_image_path =  path_images + "/" + visible_image_path + ".jpg"
-    thermal_image_path =  path_images + "/" + str(row["thermal_image"].split("/")[-1][:-5])[2:-1] + ".tiff"
+    visible_image_path =  row["visible_image"]
+    thermal_image_path =  row["thermal_image"]
     print("visible_image_path:", visible_image_path)
     print("thermal_image_path:", thermal_image_path)
     altura = row["alture"]
@@ -106,7 +105,7 @@ for index ,row in df.iterrows():
     fireDetectionOuput = fireForestFuzzyDetector.detectFire(temp_array, altura, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, thershold_temperature)
     alert_prob = fireDetectionOuput.fire_prob
     max_areaM2 = fireDetectionOuput.fireDetectionData.max_areaM2 
-    max_temperature =  fireDetectionOuput.fireDetectionDataqq.fligth_height
+    max_temperature =  fireDetectionOuput.fireDetectionData.max_temperature
     print("alert_prob:", alert_prob)
     print("max_areaM2", max_areaM2)
     print("max_temperature", max_temperature)

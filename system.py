@@ -145,8 +145,8 @@ class System:
         ## Calcule frame rate detection
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
-        if frame_rate > 0.5:
-            frame_rate = 0.5
+        #if frame_rate > 4:
+        frame_rate = 4
         print("...................Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -225,10 +225,12 @@ class System:
                     #break
             
             if self.show_frames:
+
                 tframe_image = thermal_frame.getThermalFrameRGB()
             
                 vframe_image = thermal_frame.getVisibleFrameRGB()
                 tframe_image_disp = cv2.cvtColor(tframe_image, cv2.COLOR_RGB2BGR)
+                
                 cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("Thermal Image", 640, 480)
                 cv2.imshow("Thermal Image", tframe_image_disp)
@@ -237,11 +239,27 @@ class System:
                 cv2.namedWindow("VisibleImage", cv2.WINDOW_NORMAL)
                 cv2.resizeWindow("VisibleImage", 640, 480)
                 cv2.imshow("VisibleImage", vframe_image)
-                cv2.waitKey(20)
+                c = cv2.waitKey(20)
+                if c == ord("c"):
+                    print("\n\n...........................Capturando Imagen.............................................................................\n")
+                    file_name = create_csv(name_base = "captura_flir_",req_fields = self.req_fields)
+                    visible_image_name, thermal_image_name = thermal_frame.save_images()
+                    visible_image_name_decoded = visible_image_name.decode()
+                    thermal_image_name_decoded = thermal_image_name.decode()
+                    current_data["visible_image"] = f"images/{visible_image_name_decoded}.jpg"
+                    current_data["thermal_image"] = f"images/{thermal_image_name_decoded}.tiff"
+                    register_in_csv(file_name, current_data, req_fields = self.req_fields)
+                    print("\n\n...........................Imagen Capturada.............................................................................\n")
+                if c == ord('q'):
+                    break
             
             thermal_frame.clear()
             del thermal_frame
             gc.collect()
+
+        stop_read_radar = True
+        stop_read_location = True
+        stop_read_bmp280 = True
 
     def start_read_distance(self):
         self.distanceDetector.start()
@@ -285,6 +303,7 @@ class System:
 def main(show_frames = False, save_images = False):
     system = System(show_frames=show_frames, save_images = save_images)
     system.run()
+
 
 if __name__  == "__main__":
     parser = argparse.ArgumentParser(description = "altimeter BMP280",

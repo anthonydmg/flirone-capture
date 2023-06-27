@@ -541,7 +541,8 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
                 pos = 2 * ( y * (THERMAL_IMAGE_WIDTH + 2) + x) + 32;
                 //printf("data[%d] = %d\n", pos,buffer_data[pos]);
                 value =  tframe_data[pos] | tframe_data[pos + 1] << 8;
-                gray16frame[y* THERMAL_IMAGE_WIDTH + x] = value;
+                //gray16frame[y* THERMAL_IMAGE_WIDTH + x] = value;
+                gray16frame[y + x * THERMAL_IMAGE_HEIGHT] = value;
 
                 if(y == 0 && x == 0){
                     minval_gray = value;
@@ -579,7 +580,8 @@ void read_gray16(uint8_t tframe_data[450000], uint16_t gray16frame [4800], uint3
         
             for(int x = 0; x< THERMAL_IMAGE_WIDTH; x++){
                 
-                val_pix = ((gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
+                val_pix = ((gray16frame[ y + x * THERMAL_IMAGE_HEIGHT] - minval_gray) * scale) >> 8;
+                //  val_pix = ((gray16frame[ x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale) >> 8;
                 //val_pix = (float(gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) / delta) * 255;
                 //val_pix = (gray16frame[x + y * THERMAL_IMAGE_WIDTH] - minval_gray) * scale;
                 //printf("val_pix: %d\n", val_pix);
@@ -677,6 +679,13 @@ void load_image_16bits_tiff(char pathname[100], uint16_t image_gray16[80 * 60]){
 		TIFFReadRawStrip(tif, strip, image_gray16 + stripsize / 2, -1);
         stripsize = bc[strip];
 	}
+    /*FILE *fptr;
+
+    fptr = fopen("./image_demo.txt","w");
+    for (int i =0; i < 80 * 60; i++){
+        fprintf(fptr,"%d ",image_gray16[i]);
+    }
+    fclose(fptr);*/
 }
 
 bool save_jpg_image_from_buffer(uint8_t * bmp_buffer, char * name, uint32 width, uint32  height){
@@ -786,7 +795,7 @@ bool save_flir_images_prev(char * path, uint16_t * imageGray16, uint32_t thermal
 bool save_flir_images(char * path, char * visible_image_name, char * thermal_image_name, uint16_t * imageGray16, uint32_t thermal_weight, uint32_t thermal_heigth, uint8_t * frame_color, uint32_t frame_weight, uint32_t frame_heigth ){
     long long ms = current_timestamp();
     char path_thermal_image[100];
-    sprintf(path_thermal_image, "%s/%s.tif", path, thermal_image_name);
+    sprintf(path_thermal_image, "%s/%s.tiff", path, thermal_image_name);
 
     char path_visible_image[100];
     sprintf(path_visible_image, "%s/%s.jpg", path, visible_image_name);
@@ -860,7 +869,7 @@ extern "C" {
     void read_tframe_temperatures(uint16_t gray16frame [4800], double Temperatures[80 * 60]){
            for(int y = 0; y < THERMAL_IMAGE_HEIGHT; y++){
                 for(int x = 0; x< THERMAL_IMAGE_WIDTH; x++){   
-                        Temperatures[y + x * THERMAL_IMAGE_HEIGHT] = raw2temperature(gray16frame[x + y * THERMAL_IMAGE_WIDTH]);
+                        Temperatures[y + x * THERMAL_IMAGE_HEIGHT] = raw2temperature(gray16frame[y + x * THERMAL_IMAGE_HEIGHT]);
                 }
             }
     }  

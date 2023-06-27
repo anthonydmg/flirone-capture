@@ -123,6 +123,15 @@ if __name__ == "__main__":
       print("Promedio de altitud sobre el nivel del mar con la libreria adafruit: ", altimeter.altitude_over_sea_level_lib_adafruit)
       h_sea_level = altimeter.calculate_absolute_alture(PRESION_OVER_SEA_LEVEL, P)
       print("Calculo propio de altura sobre el nivel del mar: ", h_sea_level)
+      h_sea_level_lib_adafruit = altimeter.read_altitude_lib_adafruit(P)
+      h_abs_calculate_diff_lib_adafruit = h_sea_level_lib_adafruit - altimeter.altitude_over_sea_level_lib_adafruit
+      time.sleep(0.1)
+      if h_abs_calculate_diff_lib_adafruit < 1 and  h_abs_calculate_diff_lib_adafruit > -1:
+         print("El punto de referencia se inicializo correctamente")
+      else:
+         print("El punto de referencia no se inicializo correctamente pruebe de nuevo")
+         print("H:", h_abs_calculate_diff_lib_adafruit)
+
    else:
       req_fields = [ "presion",
                      "presion_over_floor",
