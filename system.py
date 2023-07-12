@@ -146,7 +146,7 @@ class System:
         frame_rate = self.calculateFps(self.fligth_height, self.fligh_speed)
         
         #if frame_rate > 4:
-        frame_rate = 4
+        frame_rate = 2
         print("...................Frame Rate:...............................", frame_rate)
         ## gps location
 
@@ -210,6 +210,8 @@ class System:
                 current_data["area_fire"] =  fireDetectionData.max_areaM2
                 current_data["latitud"] = fireDetectionData.latitud
                 current_data["longitud"] = fireDetectionData.longitud
+                print("max_temperature:", fireDetectionData.max_temperature)
+                print("area_fire:", fireDetectionData.max_areaM2)
 
             #if (time_elapsed_save > (1 / frame_rate_save)):
                 if self.save_images:
