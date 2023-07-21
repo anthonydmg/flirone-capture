@@ -37,7 +37,7 @@ class FireDetectionOuput:
     def __init__(self, fire_prob, alert_level, max_temperature, max_areaM2, fligth_height):
         self.fire_prob = fire_prob
         self.alert_level = alert_level
-        self.fireDetectionData = FireDetecionData(max_temperature, max_areaM2, fligth_height)
+        self.fireDetectionData = FireDetecionData(max_temperature, max_areaM2, fligth_height = fligth_height)
 
 class FireForestDetector:
     def __init__(self):
