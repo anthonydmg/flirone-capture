@@ -64,10 +64,11 @@ class FireForestDetector:
         #areas = []
         max_areaM2 = 0
         for i ,cnt in enumerate(hot_regions_contours):
-            areaPixels = cv2.contourArea(cnt)
-            #num_pixels = self.calculate_num_pixels(cnt, i)
+            #areaPixels = cv2.contourArea(cnt)
+            num_pixels = self.calculate_num_pixels(cnt, i)
+            print("num_pixels:", num_pixels)
             #print("AreaPixeles:", areaPixels)
-            areaM2 = self.convertAreaMetersV2(areaPixels, fligth_height)
+            areaM2 = self.convertAreaMetersV2(num_pixels, fligth_height)
             if areaM2 > max_areaM2:
                 max_areaM2 = areaM2
             #print("areaM2:", areaM2)

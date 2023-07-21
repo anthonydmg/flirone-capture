@@ -192,7 +192,7 @@ class System:
                 matrix_temperatures = thermal_frame.getMatrixTemperatures()
                 current_data = CURRENT_ALTIMETER_DATA.copy() 
 
-                current_alture = current_data["alture"] if current_data["alture"] < 0.0 else 2.0
+                current_alture = current_data["alture"] if current_data["alture"] > 0.0 else 2.0
 
                 print("current_alture:", current_alture)
                 
@@ -202,8 +202,8 @@ class System:
                 fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
                 fireDetectionData.set_longitud(CURRENT_LOCATION["longitude"])
 
-                if fire_prob > 0.2:
-                    self.notify_alert(fire_prob, fireDetectionData)
+                #if fire_prob > 0.2:
+                self.notify_alert(fire_prob, fireDetectionData)
                     #thermal_frame.save_images()
                 prev_time =  time.time()
                 current_data["fire_prob"] = fire_prob

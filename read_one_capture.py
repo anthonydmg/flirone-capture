@@ -1,10 +1,10 @@
 import numpy as np
 import cv2
 
-path_image_tiff = "images/flir_thermal_16gray_2023_06_26_17_00_57_185706.tiff"
+path_image_tiff = "./12-07-23/images/flir_thermal_16gray_2023_07_12_12_30_22_571401.tiff"
 
 gray16_image = cv2.imread(path_image_tiff, cv2.IMREAD_ANYDEPTH)
-
+print(gray16_image)
 im_shape = gray16_image.shape
 
 gray8_image = np.zeros(im_shape, dtype = np.uint8)

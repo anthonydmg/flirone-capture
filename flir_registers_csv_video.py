@@ -33,8 +33,9 @@ thershold_temperature = 100
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
 
-path_csv = "./registers/fire_detection_2023_06_26_17_09_55_629175.csv"
-path_images = "./images"
+path_root = "./12-07-23"
+path_csv = f"{path_root}/registers/fire_detection_2023_07_12_13_43_59_847201.csv"
+path_images = f"{path_root}/images"
 
 df = pd.read_csv(path_csv)
 
@@ -49,8 +50,8 @@ temperatures = (ctypes.c_double * 4800)()
 #    f"{path_images}/flir_visible_image_2023_06_09_08_04_01_997171.jpg"]]
 
 for index ,row in df.iterrows():
-    visible_image_path =  row["visible_image"]
-    thermal_image_path =  row["thermal_image"]
+    visible_image_path =  f'{path_root}/{row["visible_image"]}'
+    thermal_image_path =  f'{path_root}/{row["thermal_image"]}'
     print("visible_image_path:", visible_image_path)
     print("thermal_image_path:", thermal_image_path)
     altura = row["alture"]
@@ -120,7 +121,7 @@ for index ,row in df.iterrows():
     cv2.imshow("Mask Temperature", mask_temp)
 
     cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Thermal Image", 640, 480)
+    #cv2.resizeWindow("Thermal Image", 640, 480)
     cv2.imshow("Thermal Image", tframe_image)
     
     ##vframe_image = cv2.convertScaleAbs(vframe_image, 1.3, 0)
@@ -142,6 +143,7 @@ for index ,row in df.iterrows():
     for i_cont in range(len(contours)):
         im_cont_i = np.zeros((80,60))
         areaPixels = cv2.contourArea(contours[i_cont])
+        print("areaPixels:", areaPixels)
         cv2.drawContours(im_cont_i, contours,  i_cont, (255, 255, 255), cv2.FILLED)
         
         im_hot_spot = im_cont_i != 0.0
