@@ -196,7 +196,7 @@ class System:
 
                 print("current_alture:", current_alture)
                 
-                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 80)
+                fireDetectionOuput = self.fireForestDetector.detectFire(matrix_temperatures,current_alture, THERMAL_IMAGE_HEIGTH, THERMAL_IMAGE_WIDTH, 28)
                 fire_prob = fireDetectionOuput.fire_prob
                 fireDetectionData = fireDetectionOuput.fireDetectionData
                 fireDetectionData.set_latitud(CURRENT_LOCATION["latitude"])
