@@ -98,9 +98,9 @@ class FireForestDetector:
         return fireDetectionOuput
     
     def convertAreaMetersV2(self,  areaPixels,  altura):
-        gsd_2 = (1.44 * altura)/ 10000
-        return areaPixels * gsd_2
-
+        gsd_2 = (1.3590177) * altura ** 2 # cm/pix
+        area_meters = (areaPixels * gsd_2) / 10000
+        return area_meters
 
     def convertAreaMeters(self, areaPixels,  altura,  heigth,  width):
         # RGB images distances
