@@ -146,7 +146,8 @@ if __name__ == "__main__":
                      "time"]
       delay = 0.5
       file_name = create_csv(name_base = f"altimeter_{str(delay)}fps_", req_fields = req_fields)
-      while True:
+      for i in range(35):
+      # while True:
          P = altimeter.read_pressure()
          temperature = altimeter.read_temperature()
          

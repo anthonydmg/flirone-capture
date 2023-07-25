@@ -45,7 +45,7 @@ class FuzzySystem:
     def init_fuzzy_system(self):
         ## Generando las variables
         self.x_temperature = np.arange(0,300,1)
-        self.x_areaFire = np.arange(0,30,0.5)
+        self.x_areaFire = np.arange(0,20,0.5)
         self.x_alert = np.arange(0,1,0.1)
 
         ## Fuzzy member ship
@@ -53,9 +53,11 @@ class FuzzySystem:
         self.temp_medium = fuzz.trimf(self.x_temperature, [50, 100, 140])
         self.temp_high = fuzz.trapmf(self.x_temperature,[80,140,300,300])
 
-        self.areaF_low = fuzz.trapmf(self.x_areaFire, [0, 0, 0.5, 1])
+        self.areaF_very_low = fuzz.trapmf(self.x_areaFire, [0, 0, 0.25, 0.5])
+        self.areaF_low = fuzz.trimf(self.x_areaFire, [0.25, 0.5, 1.0])
         self.areaF_medium = fuzz.trimf(self.x_areaFire, [0.5, 1, 2])
-        self.areaF_high = fuzz.trapmf(self.x_areaFire, [1, 2, 30,30])
+        self.areaF_high = fuzz.trimf(self.x_areaFire, [1, 5, 10])
+        self.areaF_very_high = fuzz.trapmf(self.x_areaFire, [5, 10, 20, 20])
 
         self.alert_low = fuzz.trapmf(self.x_alert, [0,0, 0.3 ,0.5])
         self.alert_medium = fuzz.trimf(self.x_alert, [0.3, 0.5 , 0.7])
@@ -140,14 +142,19 @@ class FuzzySystem:
         ax0.set_title('Temperature')
         ax0.legend()
 
-        ax1.plot(self.x_areaFire, self.areaF_low, 'b', linewidth = 1.5, label = 'Bajo')
+        
+        
+        ax1.plot(self.x_areaFire, self.areaF_very_low, 'b', linewidth = 1.5, label = 'Muy Bajo')
+        ax1.plot(self.x_areaFire, self.areaF_low, 'c', linewidth = 1.5, label = 'Bajo')
         ax1.plot(self.x_areaFire, self.areaF_medium, 'g', linewidth = 1.5, label = 'Medio')
-        ax1.plot(self.x_areaFire, self.areaF_high, 'r', linewidth = 1.5, label = 'Alto')
+        ax1.plot(self.x_areaFire, self.areaF_high, 'y', linewidth = 1.5, label = 'Alto')
+        ax1.plot(self.x_areaFire, self.areaF_very_high, 'r', linewidth = 1.5, label = 'Muy Alto')
+        ax1.set_xticks(range(0,21, 1))
         ax1.set_title('Area')
         ax1.legend()
 
-        ax2.plot(self.x_alert, self.alert_low, 'b', linewidth = 1.5, label = 'Verde')
-        ax2.plot(self.x_alert, self.alert_medium, 'g', linewidth = 1.5, label = 'Amarillo')
+        ax2.plot(self.x_alert, self.alert_low, 'g', linewidth = 1.5, label = 'Verde')
+        ax2.plot(self.x_alert, self.alert_medium, 'y', linewidth = 1.5, label = 'Amarillo')
         ax2.plot(self.x_alert, self.alert_high, 'r', linewidth = 1.5, label = 'Rojo')
         ax2.set_title('Level Alert')
         ax2.legend()
