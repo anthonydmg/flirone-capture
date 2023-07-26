@@ -33,8 +33,8 @@ thershold_temperature = 80
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
 
-path_root = "./21-07-23"
-path_csv = f"{path_root}/registers/fire_detection_2023_07_12_13_08_26_468841.csv"
+path_root = "./25-07-23"
+path_csv = f"{path_root}/registers/fire_detection_2023_07_25_16_56_46_820618.csv"
 #path_csv = f"{path_root}/registers/fire_detection_2023_07_12_13_33_35_975324.csv" // mas de dos
 path_images = f"{path_root}/images"
 
@@ -49,6 +49,9 @@ for index ,row in df.iterrows():
     thermal_image_path =  f'{path_root}/{row["thermal_image"]}'
     
     gray16_image = cv2.imread(thermal_image_path, cv2.IMREAD_ANYDEPTH)
+    print("Max gray16: ", gray16_image.max())
+    print("Min gray16: ", gray16_image.min())
+    gray16_image[ gray16_image > np.percentile(gray16_image, 90)] = gray16_image.mean()
     im_shape = gray16_image.shape
     gray8_image = np.zeros(im_shape, dtype = np.uint8)
     gray8_image = cv2.normalize(gray16_image, gray8_image,0, 255, cv2.NORM_MINMAX)
@@ -85,10 +88,10 @@ for index ,row in df.iterrows():
     tframe_image_resize = cv2.resize(inferno_palette_img,(1080,1440), cv2.INTER_AREA)
     
     
-    #cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("Thermal Image", cv2.WINDOW_NORMAL)
 
-    #cv2.resizeWindow("Thermal Image", 640, 480)
-    #cv2.imshow("Thermal Image", inferno_palette_img)
+    cv2.resizeWindow("Thermal Image", 640, 480)
+    cv2.imshow("Thermal Image", inferno_palette_img)
     
     ##vframe_image = cv2.convertScaleAbs(vframe_image, 1.3, 0)
     cv2.namedWindow("Visible Image", cv2.WINDOW_NORMAL)
@@ -104,8 +107,8 @@ for index ,row in df.iterrows():
     vframe_edges = cv2.Canny(blurred, t_lower, t_upper)
     #cv2.imshow("Visible Image Edges", vframe_edges)
     tframe_image_add_edges = cv2.addWeighted(tframe_image_resize, 0.7, cv2.cvtColor(vframe_edges, cv2.COLOR_GRAY2BGR), 0.3,0)
-    cv2.namedWindow("Thermal Image Edges", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("Thermal Image Edges",  960, 720)
-    cv2.imshow("Thermal Image Edges", tframe_image_add_edges)
+    #cv2.namedWindow("Thermal Image Edges", cv2.WINDOW_NORMAL)
+    #cv2.resizeWindow("Thermal Image Edges",  960, 720)
+    #cv2.imshow("Thermal Image Edges", tframe_image_add_edges)
    
     cv2.waitKey(0)

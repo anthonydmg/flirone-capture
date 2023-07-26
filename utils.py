@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import time
 import os
+import numpy as np
 #data = { "presion": 101451, "alture": 100 , "altitud_sobre_nivel_mar": 1010, "hora":  datetime.now()}
 
 #req_fields = ["presion", "alture", "altitud_sobre_nivel_mar", "hora"]
@@ -42,3 +43,7 @@ def register_in_csv(name_file, data ,req_fields = ["presion", "alture"]):
     with open(name_file, "a", newline= "") as f_output:
         cv_output = csv.DictWriter(f_output, fieldnames = req_fields)
         cv_output.writerow(data)
+
+
+a = np.array(range(1,100))
+print(np.percentile(a, 95))
