@@ -32,9 +32,8 @@ thershold_temperature = 80
 #overlap = 75
 THERMAL_IMAGE_HEIGTH = 80
 THERMAL_IMAGE_WIDTH = 60
-
-path_root = "./25-07-23"
-path_csv = f"{path_root}/registers/fire_detection_2023_07_25_16_56_46_820618.csv"
+path_root = "./26-07-23"
+path_csv = f"{path_root}/registers/fire_detection_2023_07_26_13_36_02_118728.csv"
 #path_csv = f"{path_root}/registers/fire_detection_2023_07_12_13_33_35_975324.csv" // mas de dos
 path_images = f"{path_root}/images"
 
