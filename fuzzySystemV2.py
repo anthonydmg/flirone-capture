@@ -49,7 +49,7 @@ class FuzzySystem:
         self.x_alert = np.arange(0,1,0.1)
 
         ## Fuzzy member ship
-        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0,50, 100])
+        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0, 40, 80])
         self.temp_medium = fuzz.trimf(self.x_temperature, [50, 100, 140])
         self.temp_high = fuzz.trapmf(self.x_temperature,[80,140,300,300])
 
