@@ -45,17 +45,17 @@ class FuzzySystem:
     def init_fuzzy_system(self):
         ## Generando las variables
         self.x_temperature = np.arange(0,300,1)
-        self.x_areaFire = np.arange(0,30,0.5)
+        self.x_areaFire = np.arange(0,20,0.5)
         self.x_alert = np.arange(0,1,0.1)
 
         ## Fuzzy member ship
-        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0,50, 100])
-        self.temp_medium = fuzz.trimf(self.x_temperature, [50, 100, 140])
+        self.temp_low = fuzz.trapmf(self.x_temperature, [0, 0,50, 80])
+        self.temp_medium = fuzz.trimf(self.x_temperature, [50, 80, 140])
         self.temp_high = fuzz.trapmf(self.x_temperature,[80,140,300,300])
 
-        self.areaF_low = fuzz.trapmf(self.x_areaFire, [0, 0, 0.5, 1])
-        self.areaF_medium = fuzz.trimf(self.x_areaFire, [0.5, 1, 2])
-        self.areaF_high = fuzz.trapmf(self.x_areaFire, [1, 2, 30,30])
+        self.areaF_low = fuzz.trapmf(self.x_areaFire, [0, 0, 1, 2.5])
+        self.areaF_medium = fuzz.trimf(self.x_areaFire, [1, 2.5, 4])
+        self.areaF_high = fuzz.trapmf(self.x_areaFire, [2.5, 4, 20,20])
 
         self.alert_low = fuzz.trapmf(self.x_alert, [0,0, 0.3 ,0.5])
         self.alert_medium = fuzz.trimf(self.x_alert, [0.3, 0.5 , 0.7])
@@ -128,6 +128,9 @@ class FuzzySystem:
     
     def fuzzy_system_inference(self, maxTemperature, areaFire):
         rule_verde, rule_naranja , rule_rojo = self.fuzzy_inference(maxTemperature, areaFire)
+        print("rule_verde:", rule_verde)
+        print("rule_naranja:", rule_naranja)
+        print("rule_rojo:", rule_rojo)
         return self.defuzzification(rule_verde, rule_naranja , rule_rojo)
 
     def plot(self):
@@ -162,15 +165,15 @@ class FuzzySystem:
         plt.show()
 
 if __name__ == "__main__":
-    maxTemperature = 182.244
-    area_region_m2 = 0.124
+    maxTemperature = 105.93
+    area_region_m2 = 0.068
     fuzzySystem = FuzzySystem()
     fuzzySystem.plot()
-    #rule_verde, rule_naranja , rule_rojo = fuzzySystem.fuzzy_inference(maxTemperature, area_region_m2)
-    #print("rule_verde:", rule_verde)
-    #print("rule_naranja:", rule_naranja)
-    #print("rule_rojo:", rule_rojo)
-    #output = fuzzySystem.defuzzification(rule_verde, rule_naranja , rule_rojo)
-    #print("output.alert_prob: ",output.alert_prob)
+    rule_verde, rule_naranja , rule_rojo = fuzzySystem.fuzzy_inference(maxTemperature, area_region_m2)
+    print("rule_verde:", rule_verde)
+    print("rule_naranja:", rule_naranja)
+    print("rule_rojo:", rule_rojo)
+    output = fuzzySystem.defuzzification(rule_verde, rule_naranja , rule_rojo)
+    print("output.alert_prob: ",output.alert_prob)
     ## Ecuaciones.
     
